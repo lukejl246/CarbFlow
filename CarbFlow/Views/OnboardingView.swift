@@ -2,7 +2,6 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(Keys.carbTarget) private var carbTarget = 30
     @AppStorage(Keys.hasOnboarded) private var hasOnboarded = false
 
     var body: some View {
@@ -37,7 +36,7 @@ struct OnboardingView: View {
                     }
                 }
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                    .foregroundColor(.secondary)
             }
 
             Spacer()
@@ -52,11 +51,6 @@ struct OnboardingView: View {
             }
         }
         .padding()
-        .onAppear {
-            if carbTarget == 0 {
-                carbTarget = 30
-            }
-        }
     }
 
     private func continueOnboarding() {

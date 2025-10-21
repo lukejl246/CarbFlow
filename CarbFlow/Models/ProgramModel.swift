@@ -23,6 +23,7 @@ enum Keys {
     static let username = "cf_username"
     static let hasOnboarded = "cf_hasOnboarded"
     static let carbTarget = "cf_carbTarget"
+    static let hasSetCarbTarget = "cf_hasSetCarbTarget"
 }
 
 struct DayContent {
@@ -61,7 +62,8 @@ struct ProgramModel {
         DayModule(day: 27, title: "Kitchen Tools", summary: "Equip your kitchen with gadgets for faster prep."),
         DayModule(day: 28, title: "Batch Cooking", summary: "Cook once and eat many times with freezer-friendly meals."),
         DayModule(day: 29, title: "Travel Tips", summary: "Stay on track while commuting or flying."),
-        DayModule(day: 30, title: "Long-Term Success", summary: "Create a maintenance plan to sustain keto living.")
+        DayModule(day: 30, title: "Long-Term Success", summary: "Create a maintenance plan to sustain keto living."),
+        DayModule(day: 31, title: "Fasting Focus", summary: "Investigate fasting strategies alongside keto (look into this).")
     ]
 
     static let contentByDay: [Int: DayContent] = [
@@ -77,6 +79,13 @@ struct ProgramModel {
             faqs: [
                 "Which level? Start at 30 g; adjust in week 2.",
                 "Do fibre carbs count? You can use net carbs—just be consistent."
+            ]
+        ),
+        31: DayContent(
+            keyIdea: "Fasting can complement ketosis; evaluate protocols and safety before implementing.",
+            faqs: [
+                "Should I fast daily? Look into this with your healthcare provider—start conservatively.",
+                "How long should a fast last? Begin with short windows and monitor how you feel."
             ]
         )
     ]

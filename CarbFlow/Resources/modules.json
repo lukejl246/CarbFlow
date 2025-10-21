@@ -1,0 +1,687 @@
+{
+  "contentVersion": 1,
+  "days": [
+    {
+      "day": 1,
+      "title": "Why Keto",
+      "summary": "Learn the metabolic context behind lowering carbs and using fat for fuel.",
+      "keyIdea": "Keto lowers carbs to reduce glucose swings and encourage fat utilisation.",
+      "faqs": [
+        "Is this medical advice? No\u2014consult your doctor.",
+        "Track calories now? Not yet; start with carbs only."
+      ],
+      "readMins": 2,
+      "tags": [
+        "foundations"
+      ],
+      "prerequisites": [],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": true,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 2,
+      "title": "Carb Targets",
+      "summary": "Choose a daily carb cap that balances dietary adherence with energy needs.",
+      "keyIdea": "Pick a sustainable daily carb cap: 20, 30, 40, or 50 g.",
+      "faqs": [
+        "Which level? Start at 30 g; adjust in week 2.",
+        "Do fibre carbs count? You can use net carbs\u2014just be consistent."
+      ],
+      "readMins": 3,
+      "tags": [
+        "nutrition",
+        "decision"
+      ],
+      "prerequisites": [
+        1
+      ],
+      "requiresCarbTarget": true,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 3,
+      "title": "Sweeteners 101",
+      "summary": "Compare natural and artificial sweeteners that fit ketosis.",
+      "keyIdea": "Know which sweeteners have minimal glycaemic impact before adding them to your plan.",
+      "faqs": [
+        "Are sugar alcohols OK? Most are, but note they can upset digestion in large amounts.",
+        "Is honey keto? Natural sugars still raise glucose; best saved for off-plan meals."
+      ],
+      "readMins": 2,
+      "tags": [
+        "nutrition"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 4,
+      "title": "Pantry Reset",
+      "summary": "Clear out high-carb staples and restock with keto-friendly basics.",
+      "keyIdea": "Environment design makes adherence easier\u2014stock what supports your goal.",
+      "faqs": [
+        "Do I throw food away? Donate sealed goods or share with friends instead.",
+        "What about family? Keep shared shelves and label your go-to items."
+      ],
+      "readMins": 2,
+      "tags": [
+        "environment"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 5,
+      "title": "Hidden Carbs",
+      "summary": "Spot sneaky sugars in condiments, sauces, and packaged foods.",
+      "keyIdea": "Read labels\u2014carbs can hide in sauces, marinades, and processed meats.",
+      "faqs": [
+        "Are zero-sugar drinks safe? Check for maltodextrin or tapioca starch fillers.",
+        "Do spices have carbs? Minimal, but blends may include sugar."
+      ],
+      "readMins": 2,
+      "tags": [
+        "label-reading"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 6,
+      "title": "Hydration Essentials",
+      "summary": "Dial in water intake to support energy and appetite control.",
+      "keyIdea": "Hydration needs vary\u2014monitor thirst, urine colour, and activity level.",
+      "faqs": [
+        "How much water daily? Start around 30\u201335 ml per kg body weight.",
+        "Is sparkling water okay? Yes, unsweetened varieties are fine."
+      ],
+      "readMins": 2,
+      "tags": [
+        "hydration"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 7,
+      "title": "Electrolyte Balance",
+      "summary": "Prioritize sodium, potassium, and magnesium for steady energy.",
+      "keyIdea": "Electrolyte gaps drive fatigue\u2014plan sources daily.",
+      "faqs": [
+        "Do I need supplements? Start with food; supplement if symptoms persist.",
+        "Can I rely on sports drinks? Many add sugar\u2014use low-carb formulas."
+      ],
+      "readMins": 3,
+      "tags": [
+        "hydration",
+        "supplements"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        6
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 8,
+      "title": "Breakfast Swaps",
+      "summary": "Reinvent morning meals with low-carb, high-fat ideas.",
+      "keyIdea": "Swap grains for protein and fibre to stabilise morning glucose.",
+      "faqs": [
+        "Quick options? Eggs, yogurt, chia pudding, or smoked salmon plates.",
+        "What about coffee? Add fat-free sweeteners or heavy cream sparingly."
+      ],
+      "readMins": 2,
+      "tags": [
+        "meal-ideas"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 9,
+      "title": "Lunch Planning",
+      "summary": "Build portable keto lunches that keep you satisfied.",
+      "keyIdea": "Combine protein, fat, and vegetables you enjoy for adherence.",
+      "faqs": [
+        "Can I meal prep? Yes\u2014batch cook proteins and assemble fresh.",
+        "Ideas for the office? Bento boxes with cheese, olives, nuts, greens."
+      ],
+      "readMins": 2,
+      "tags": [
+        "meal-ideas"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        8
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 10,
+      "title": "Dinner Strategies",
+      "summary": "Craft balanced evening meals the whole family enjoys.",
+      "keyIdea": "Base dinners on protein and veggies; add fats with sauces and sides.",
+      "faqs": [
+        "What about pasta? Try zucchini noodles or spaghetti squash.",
+        "Do I need dessert? Optional\u2014berries with cream can fit your target."
+      ],
+      "readMins": 2,
+      "tags": [
+        "meal-ideas",
+        "family"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        8,
+        9
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 11,
+      "title": "Snack Prep",
+      "summary": "Prepare quick bites that prevent cravings and over-snacking.",
+      "keyIdea": "Plan snacks you actually like so you skip the vending machine.",
+      "faqs": [
+        "Do I need snacks? Optional\u2014use them to bridge long gaps.",
+        "Best travel options? Nuts, cheese sticks, jerky, hard-boiled eggs."
+      ],
+      "readMins": 2,
+      "tags": [
+        "meal-ideas",
+        "planning"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 12,
+      "title": "Eating Out",
+      "summary": "Navigate restaurant menus and stay within your carb budget.",
+      "keyIdea": "Scan menus in advance and anchor meals around protein.",
+      "faqs": [
+        "What about sauces? Ask for them on the side.",
+        "Can I have dessert? Share a low-carb option or plan extra carbs."
+      ],
+      "readMins": 2,
+      "tags": [
+        "social"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 13,
+      "title": "Label Literacy",
+      "summary": "Decode nutrition labels to confirm keto compliance.",
+      "keyIdea": "Focus on total carbs, fibre, and serving size\u2014marketing can mislead.",
+      "faqs": [
+        "Net carbs or total? Pick one metric and track it consistently.",
+        "What about sugar alcohols? Track half if they upset digestion."
+      ],
+      "readMins": 3,
+      "tags": [
+        "label-reading"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        5
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 14,
+      "title": "Macro Tracking",
+      "summary": "Use simple tracking tools to monitor carbs, fat, and protein.",
+      "keyIdea": "Use tracking selectively\u2014helpful for data, optional long term.",
+      "faqs": [
+        "Apps to use? Cronometer, MacroFactor, or manual notes.",
+        "Do I need to weigh food? In short bursts it improves accuracy."
+      ],
+      "readMins": 3,
+      "tags": [
+        "tracking"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        13
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 15,
+      "title": "Fiber Focus",
+      "summary": "Increase low-carb fiber sources for gut and heart health.",
+      "keyIdea": "Aim for fibre-rich veggies, seeds, and low-carb fruit to stay regular.",
+      "faqs": [
+        "Do I need supplements? Start with chia, flax, leafy greens.",
+        "Constipation tips? Increase fibre gradually and hydrate."
+      ],
+      "readMins": 2,
+      "tags": [
+        "nutrition",
+        "digestion"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        6
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 16,
+      "title": "Healthy Fats",
+      "summary": "Choose quality fats that improve satiety and inflammation.",
+      "keyIdea": "Prioritize minimally processed fats; vary sources for micronutrients.",
+      "faqs": [
+        "Butter or oils? Use olive oil, avocado oil, grass-fed butter.",
+        "What about seed oils? Limit high-omega-6 oils when possible."
+      ],
+      "readMins": 3,
+      "tags": [
+        "nutrition"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 17,
+      "title": "Protein Priorities",
+      "summary": "Dial protein to protect lean mass and recovery.",
+      "keyIdea": "Aim for 1.2\u20131.6 g/kg lean mass unless advised otherwise.",
+      "faqs": [
+        "Is too much protein anti-keto? Gluconeogenesis is demand-driven\u2014prioritise protein.",
+        "Plant-based options? Use tofu, tempeh, seitan if tolerated."
+      ],
+      "readMins": 3,
+      "tags": [
+        "nutrition"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        14
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 18,
+      "title": "Meal Timing",
+      "summary": "Experiment with fasting windows that suit your schedule.",
+      "keyIdea": "Adjust meal timing based on hunger cues, not rigid rules.",
+      "faqs": [
+        "Should I skip breakfast? Optional\u2014monitor energy response.",
+        "Is OMAD required? No, use meal timing that fits your life."
+      ],
+      "readMins": 3,
+      "tags": [
+        "timing"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        6
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 19,
+      "title": "Social Situations",
+      "summary": "Plan ahead for gatherings and keep goals intact.",
+      "keyIdea": "Communicate, bring shareable dishes, and set expectations early.",
+      "faqs": [
+        "Do I announce my diet? Share when it helps logistics.",
+        "What if hosts insist? Thank them, keep portions small."
+      ],
+      "readMins": 2,
+      "tags": [
+        "social"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        12
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 20,
+      "title": "Dessert Makeovers",
+      "summary": "Satisfy sweet cravings with low-carb desserts.",
+      "keyIdea": "Plan desserts deliberately to avoid impulse choices.",
+      "faqs": [
+        "Can I use fruit? Berries fit most carb budgets.",
+        "What about chocolate? Choose 85% and above."
+      ],
+      "readMins": 2,
+      "tags": [
+        "meal-ideas"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        3
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 21,
+      "title": "Plateau Busting",
+      "summary": "Adjust macros and habits when progress stalls.",
+      "keyIdea": "Review intake, stress, sleep, and activity before drastic changes.",
+      "faqs": [
+        "Should I lower carbs more? First audit adherence\u2014then adjust.",
+        "Do I need refeeds? Optional\u2014monitor how your body responds."
+      ],
+      "readMins": 3,
+      "tags": [
+        "troubleshooting"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        14
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 22,
+      "title": "Sleep & Recovery",
+      "summary": "Support hormones and energy with rest-first routines.",
+      "keyIdea": "Prioritise 7\u20139 hours of quality sleep to stabilise appetite and glucose.",
+      "faqs": [
+        "How to improve sleep? Keep a consistent schedule and limit screens before bed.",
+        "Is melatonin OK? Low-dose, short-term use can help\u2014check with your doctor."
+      ],
+      "readMins": 3,
+      "tags": [
+        "sleep"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        18
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 23,
+      "title": "Workout Fueling",
+      "summary": "Match activity levels with targeted carb timing.",
+      "keyIdea": "Train mostly fuelled by fat, but use targeted carbs for high-intensity work.",
+      "faqs": [
+        "Do I need pre-workout carbs? Optional\u2014experiment with 10\u201315 g net carbs if intensity drops.",
+        "Post-workout meals? Prioritise protein plus vegetables and healthy fats."
+      ],
+      "readMins": 3,
+      "tags": [
+        "fitness"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        17
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 24,
+      "title": "Mindful Eating",
+      "summary": "Use hunger cues and mindful habits to avoid overeating.",
+      "keyIdea": "Pause before meals, eat slowly, and notice satiety signals.",
+      "faqs": [
+        "Should I track hunger? Use a 1\u201310 scale before and after meals.",
+        "Is distraction bad? Eating away from screens improves fullness signals."
+      ],
+      "readMins": 2,
+      "tags": [
+        "behaviour"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 25,
+      "title": "Stress Management",
+      "summary": "Build stress relief practices that curb emotional eating.",
+      "keyIdea": "Chronic stress elevates glucose\u2014create a daily decompression ritual.",
+      "faqs": [
+        "Quick stress tools? Try diaphragmatic breathing or short walks.",
+        "Does caffeine matter? Monitor intake\u2014too much can spike cortisol."
+      ],
+      "readMins": 3,
+      "tags": [
+        "behaviour"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        18
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 26,
+      "title": "Habit Stacking",
+      "summary": "Stack new routines on existing habits for consistency.",
+      "keyIdea": "Link keto tasks to daily anchors (coffee, commute) for reminders.",
+      "faqs": [
+        "How to start? Attach one new action to a habit you already do automatically.",
+        "What if I forget? Use prompts\u2014alarms, sticky notes, or app reminders."
+      ],
+      "readMins": 2,
+      "tags": [
+        "habits"
+      ],
+      "prerequisites": [
+        1,
+        2
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 27,
+      "title": "Kitchen Tools",
+      "summary": "Equip your kitchen with gadgets for faster prep.",
+      "keyIdea": "Tools like a food scale, blender, and sheet pans streamline cooking.",
+      "faqs": [
+        "Must-have tools? Sharp knives, cast-iron pan, storage containers.",
+        "Is a slow cooker worth it? Great for batch cooking low-carb stews."
+      ],
+      "readMins": 2,
+      "tags": [
+        "environment",
+        "meal-ideas"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        4
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 28,
+      "title": "Batch Cooking",
+      "summary": "Cook once and eat many times with freezer-friendly meals.",
+      "keyIdea": "Plan double recipes and portion into storage containers for busy days.",
+      "faqs": [
+        "How often should I batch cook? Weekly or biweekly depending on schedule.",
+        "Best freezer meals? Soups, casseroles, burger patties, frittatas."
+      ],
+      "readMins": 2,
+      "tags": [
+        "meal-ideas",
+        "planning"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        27
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 29,
+      "title": "Travel Tips",
+      "summary": "Stay on track while commuting or flying.",
+      "keyIdea": "Pack keto-friendly snacks and research options at your destination.",
+      "faqs": [
+        "Airport food ideas? Seek salads with protein, bunless burgers, cheese plates.",
+        "Hotel breakfasts? Focus on eggs, bacon, yogurt, and fruit toppings."
+      ],
+      "readMins": 2,
+      "tags": [
+        "travel"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        11
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    },
+    {
+      "day": 30,
+      "title": "Long-Term Success",
+      "summary": "Create a maintenance plan to sustain keto living.",
+      "keyIdea": "Define maintenance carbs, plan periodic reviews, and stay flexible.",
+      "faqs": [
+        "Do I ever add carbs back? Evaluate goals\u2014some raise to maintenance range.",
+        "How often should I reassess? Monthly check-ins keep you honest."
+      ],
+      "readMins": 3,
+      "tags": [
+        "maintenance"
+      ],
+      "prerequisites": [
+        1,
+        2,
+        21
+      ],
+      "requiresCarbTarget": false,
+      "requiresQuizCorrect": false,
+      "listRefs": [],
+      "evidenceIds": []
+    }
+  ]
+}

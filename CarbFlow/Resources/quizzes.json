@@ -1,0 +1,51 @@
+{
+  "quizzes": [
+    {
+      "day": 1,
+      "question": "What is the key takeaway from Day 1?",
+      "options": [
+        "Lower carbs to stabilise glucose and use fat for fuel.",
+        "Increase carb intake to boost insulin.",
+        "Avoid thinking about macros altogether."
+      ],
+      "correctIndex": 0,
+      "explanation": "Day 1 focuses on why reducing carbs supports steadier energy by shifting the body toward fat utilisation."
+    },
+    {
+      "day": 2,
+      "question": "What is the main goal when selecting your daily carb target?",
+      "options": [
+        "Choose the lowest possible number.",
+        "Pick a sustainable level that balances adherence and energy.",
+        "Match the carb intake of your workout partner.",
+        "Raise carbs every week to avoid plateaus."
+      ],
+      "correctIndex": 1,
+      "explanation": "A carb target should be sustainable for your lifestyle while supporting your goals."
+    },
+    {
+      "day": 5,
+      "question": "Which label detail helps you catch hidden carbs?",
+      "options": [
+        "The colour of the packaging.",
+        "Serving size and total carbohydrates.",
+        "Country of origin.",
+        "Manufacturing date."
+      ],
+      "correctIndex": 1,
+      "explanation": "Always check serving size and total carbs—sugars often hide in condiments and sauces."
+    },
+    {
+      "day": 14,
+      "question": "What’s the best way to use macro tracking early on?",
+      "options": [
+        "Track indefinitely with rigid precision.",
+        "Use it in short bursts to gather data and spot trends.",
+        "Avoid tracking to prevent stress.",
+        "Only track calories, never macros."
+      ],
+      "correctIndex": 1,
+      "explanation": "Track selectively to learn your patterns; you don’t have to log forever."
+    }
+  ]
+}

@@ -5,30 +5,51 @@ struct ContentView: View {
     @AppStorage(Keys.hasOnboarded) private var hasOnboarded = false
     @State private var selectedTab: Tab = .home
     @State private var showOnboarding = false
+    @StateObject private var historyStore = FastingHistoryStore()
+    @StateObject private var contentStore: ContentStore
+    @StateObject private var quizStore: QuizStore
+    @StateObject private var listStore: ContentListStore
 
-    private var isUnlocked: Bool {
-        currentDay > 1
+    private static let fastingUnlockDay = 18
+    
+    init() {
+        let contentStore = ContentStore()
+        _contentStore = StateObject(wrappedValue: contentStore)
+        _quizStore = StateObject(wrappedValue: QuizStore(contentStore: contentStore))
+        _listStore = StateObject(wrappedValue: ContentListStore())
     }
+
+
+    private var learnUnlocked: Bool { currentDay > 1 }
+    private var timerUnlocked: Bool { currentDay > ContentView.fastingUnlockDay }
 
     var body: some View {
         TabView(selection: $selectedTab) {
             Group {
-                if isUnlocked {
+                if learnUnlocked {
                     NavigationStack {
-                        LearnView()
+                        LearnView(goToToday: { selectedTab = .home })
                     }
+                    .environmentObject(contentStore)
+                    .environmentObject(quizStore)
+                    .environmentObject(historyStore)
+                    .environmentObject(listStore)
                 } else {
                     LockedPlaceholderView(title: "Learn", message: "Complete Day 1 to unlock")
                 }
             }
             .tabItem {
-                Label("Learn", systemImage: isUnlocked ? "book" : "lock.fill")
+                Label("Learn", systemImage: learnUnlocked ? "book" : "lock.fill")
             }
             .tag(Tab.learn)
 
             NavigationStack {
                 HomeView()
             }
+            .environmentObject(contentStore)
+            .environmentObject(quizStore)
+            .environmentObject(historyStore)
+            .environmentObject(listStore)
             .tabItem {
                 VStack(spacing: 4) {
                     Circle()
@@ -45,16 +66,20 @@ struct ContentView: View {
             .tag(Tab.home)
 
             Group {
-                if isUnlocked {
+                if timerUnlocked {
                     NavigationStack {
                         FastingTimerView()
                     }
+                    .environmentObject(contentStore)
+                    .environmentObject(quizStore)
+                    .environmentObject(historyStore)
+                    .environmentObject(listStore)
                 } else {
-                    LockedPlaceholderView(title: "Timer", message: "Complete Day 1 to unlock")
+                    LockedPlaceholderView(title: "Timer", message: "Complete Day 18 (Meal Timing) to unlock")
                 }
             }
             .tabItem {
-                Label("Timer", systemImage: isUnlocked ? "timer" : "lock.fill")
+                Label("Timer", systemImage: timerUnlocked ? "timer" : "lock.fill")
             }
             .tag(Tab.timer)
         }
@@ -70,6 +95,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showOnboarding) {
             OnboardingView()
+                .environmentObject(contentStore)
+                .environmentObject(quizStore)
+                .environmentObject(listStore)
         }
     }
 
