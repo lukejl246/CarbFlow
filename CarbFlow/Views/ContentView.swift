@@ -25,63 +25,23 @@ struct ContentView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            Group {
-                if learnUnlocked {
-                    NavigationStack {
-                        LearnView(goToToday: { selectedTab = .home })
-                    }
-                    .environmentObject(contentStore)
-                    .environmentObject(quizStore)
-                    .environmentObject(historyStore)
-                    .environmentObject(listStore)
-                } else {
-                    LockedPlaceholderView(title: "Learn", message: "Complete Day 1 to unlock")
+            learnTab
+                .tabItem {
+                    Label("Learn", systemImage: learnUnlocked ? "book" : "lock.fill")
                 }
-            }
-            .tabItem {
-                Label("Learn", systemImage: learnUnlocked ? "book" : "lock.fill")
-            }
-            .tag(Tab.learn)
+                .tag(Tab.learn)
 
-            NavigationStack {
-                HomeView()
-            }
-            .environmentObject(contentStore)
-            .environmentObject(quizStore)
-            .environmentObject(historyStore)
-            .environmentObject(listStore)
-            .tabItem {
-                VStack(spacing: 4) {
-                    Circle()
-                        .fill(Color.accentColor)
-                        .frame(width: 44, height: 44)
-                        .overlay(
-                            Image(systemName: "house.fill")
-                                .foregroundStyle(.white)
-                                .font(.system(size: 20, weight: .semibold))
-                        )
-                    Text("Home")
+            homeTab
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
                 }
-            }
-            .tag(Tab.home)
+                .tag(Tab.home)
 
-            Group {
-                if timerUnlocked {
-                    NavigationStack {
-                        FastingTimerView()
-                    }
-                    .environmentObject(contentStore)
-                    .environmentObject(quizStore)
-                    .environmentObject(historyStore)
-                    .environmentObject(listStore)
-                } else {
-                    LockedPlaceholderView(title: "Timer", message: "Complete Day 18 (Meal Timing) to unlock")
+            timerTab
+                .tabItem {
+                    Label("Timer", systemImage: timerUnlocked ? "timer" : "lock.fill")
                 }
-            }
-            .tabItem {
-                Label("Timer", systemImage: timerUnlocked ? "timer" : "lock.fill")
-            }
-            .tag(Tab.timer)
+                .tag(Tab.timer)
         }
         .onAppear {
             if !hasOnboarded {
@@ -105,6 +65,44 @@ struct ContentView: View {
         case learn
         case home
         case timer
+    }
+
+    private var learnTab: some View {
+        NavigationStack {
+            if learnUnlocked {
+                LearnView(goToToday: { selectedTab = .home })
+            } else {
+                LockedPlaceholderView(title: "Learn", message: "Complete Day 1 to unlock")
+            }
+        }
+        .environmentObject(contentStore)
+        .environmentObject(quizStore)
+        .environmentObject(historyStore)
+        .environmentObject(listStore)
+    }
+
+    private var homeTab: some View {
+        NavigationStack {
+            HomeView()
+        }
+        .environmentObject(contentStore)
+        .environmentObject(quizStore)
+        .environmentObject(historyStore)
+        .environmentObject(listStore)
+    }
+
+    private var timerTab: some View {
+        NavigationStack {
+            if timerUnlocked {
+                FastingTimerView()
+            } else {
+                LockedPlaceholderView(title: "Timer", message: "Complete Day 18 (Meal Timing) to unlock")
+            }
+        }
+        .environmentObject(contentStore)
+        .environmentObject(quizStore)
+        .environmentObject(historyStore)
+        .environmentObject(listStore)
     }
 }
 
