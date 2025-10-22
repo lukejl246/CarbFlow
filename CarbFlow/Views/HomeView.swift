@@ -6,6 +6,10 @@ struct HomeView: View {
     @AppStorage("cf_carbTarget") private var cf_carbTarget = 0
     @AppStorage("cf_quizCorrectDays") private var quizCorrectDaysStorage: String = "[]"
 
+    @State private var navigateToDayDetail = false
+    @State private var navigateToFastingTimer = false
+    @State private var activeAlert: AlertType?
+
     private var totalDays: Int {
         max(contentStore.totalDays, 1)
     }
@@ -74,12 +78,16 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 28) {
+            VStack(alignment: .leading, spacing: 24) {
                 header
+                    .padding(.horizontal, 20)
+
                 heroCard
+                    .padding(.horizontal, 20)
+
+                DashboardGrid(title: "Dashboard", items: dashboardItems)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 24)
+            .padding(.top, 24)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
@@ -94,6 +102,64 @@ struct HomeView: View {
                 .accessibilityLabel("Open Settings")
             }
         }
+        .background(
+            Group {
+                NavigationLink(
+                    destination: DayDetailView(day: day),
+                    isActive: $navigateToDayDetail
+                ) { EmptyView() }
+                NavigationLink(
+                    destination: FastingTimerView(),
+                    isActive: $navigateToFastingTimer
+                ) { EmptyView() }
+            }
+        )
+        .alert(item: $activeAlert) { alert in
+            Alert(
+                title: Text(alert.title),
+                message: Text(alert.message),
+                dismissButton: .default(Text("Got it"))
+            )
+        }
+    }
+
+    private var dashboardItems: [DashboardItem] {
+        [
+            DashboardItem(
+                icon: "checkmark.circle",
+                title: "Progress",
+                value: "\(day)/\(totalDays)",
+                tint: .blue
+            ) {
+                navigateToDayDetail = true
+            },
+            DashboardItem(
+                icon: "leaf",
+                title: "Carbs",
+                value: hasCarb ? "\(cf_carbTarget) g" : "— g",
+                subtitle: "Set in Day 2",
+                tint: .green
+            ) {
+                activeAlert = .carbs
+            },
+            DashboardItem(
+                icon: "timer",
+                title: "Fasting",
+                value: "Not fasting",
+                tint: .orange
+            ) {
+                navigateToFastingTimer = true
+            },
+            DashboardItem(
+                icon: "moon.fill",
+                title: "Sleep",
+                value: "— h",
+                subtitle: "Add later",
+                tint: .indigo
+            ) {
+                activeAlert = .sleep
+            }
+        ]
     }
 
     private var header: some View {
@@ -228,6 +294,33 @@ struct HomeView: View {
         formatter.dateStyle = .long
         return formatter
     }()
+
+    private enum AlertType: Identifiable {
+        case carbs
+        case sleep
+
+        var id: Int {
+            hashValue
+        }
+
+        var title: String {
+            switch self {
+            case .carbs:
+                return "Carb tracking"
+            case .sleep:
+                return "Sleep tracking"
+            }
+        }
+
+        var message: String {
+            switch self {
+            case .carbs:
+                return "Carb logging will arrive in a future update."
+            case .sleep:
+                return "Sleep insights are on the roadmap. Stay tuned!"
+            }
+        }
+    }
 }
 
 #Preview {
