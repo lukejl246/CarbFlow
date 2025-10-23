@@ -5,11 +5,22 @@ struct FastingTimerView: View {
     @AppStorage(Keys.currentDay) private var currentDay = 1
     @AppStorage(Keys.isFasting) private var isFasting = false
     @AppStorage(Keys.fastingStart) private var fastingStart = 0.0
+    @EnvironmentObject var contentStore: ContentStore
     @EnvironmentObject private var historyStore: FastingHistoryStore
+    @Environment(\.dismiss) private var dismiss
 
     @State private var now = Date()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    private let unlockDay = 18
+    private var fastingUnlockDay: Int {
+        contentStore.days.first {
+            $0.title.trimmingCharacters(in: .whitespacesAndNewlines)
+                .localizedCaseInsensitiveContains("Meal Timing")
+        }?.day ?? 5
+    }
+
+    private var isUnlocked: Bool {
+        currentDay > fastingUnlockDay
+    }
 
     private var elapsed: TimeInterval {
         guard isFasting, fastingStart > 0 else { return 0 }
@@ -25,34 +36,41 @@ struct FastingTimerView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                if canAccessTimer {
-                    timerCard
-                    historyCard
-                    NavigationLink {
-                        HistoryView()
-                            .environmentObject(historyStore)
-                    } label: {
-                        Label("View history", systemImage: "clock.arrow.circlepath")
-                            .font(.footnote)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
-                            .background(Capsule().fill(Color.white.opacity(0.7)))
-                            .overlay(
-                                Capsule().stroke(Color.white.opacity(0.6), lineWidth: 1)
-                            )
+        Group {
+            if isUnlocked {
+                ScrollView {
+                    VStack(spacing: 20) {
+                        timerCard
+                        historyCard
+                        NavigationLink {
+                            HistoryView()
+                                .environmentObject(historyStore)
+                        } label: {
+                            Label("View history", systemImage: "clock.arrow.circlepath")
+                                .font(.footnote)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 10)
+                                .background(Capsule().fill(Color.white.opacity(0.7)))
+                                .overlay(
+                                    Capsule().stroke(Color.white.opacity(0.6), lineWidth: 1)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.top, 4)
                     }
-                    .buttonStyle(.plain)
-                    .padding(.top, 4)
-                } else {
-                    lockedCard
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 24)
                 }
+            } else {
+                lockedContent
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 24)
         }
         .background(backgroundGradient.ignoresSafeArea())
+        .alert("Learn Meal Timing", isPresented: $showLearnAlert, actions: {
+            Button("OK", role: .cancel) { }
+        }, message: {
+            Text("Switch to the Learn tab and complete Meal Timing to unlock fasting.")
+        })
     }
 
     private var timerCard: some View {
@@ -153,10 +171,6 @@ struct FastingTimerView: View {
         return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
 
-    private var canAccessTimer: Bool {
-        currentDay > unlockDay
-    }
-
     private var recentSessions: [FastingSession] {
         Array(historyStore.sessions.prefix(5))
     }
@@ -222,24 +236,39 @@ struct FastingTimerView: View {
         }
     }
 
-    private var lockedCard: some View {
-        TimerCard {
-            VStack(spacing: 16) {
-                Image(systemName: "lock.fill")
-                    .font(.system(size: 34, weight: .semibold))
-                    .foregroundColor(.secondary)
-                Text("Unlock after Day 18")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundColor(.primary)
-                Text("Finish the Meal Timing lesson on Day 18 to start fasting tracking.")
-                    .font(.footnote)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.secondary)
+    private var lockedContent: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            Image(systemName: "lock.fill")
+                .font(.system(size: 44, weight: .semibold))
+                .foregroundColor(.secondary)
+            Text("Fasting locked")
+                .font(.title3.weight(.semibold))
+            Text("Complete Meal Timing to enable the fasting timer.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 24)
+
+            VStack(spacing: 12) {
+                Button("Go to Today") {
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button("Learn") {
+                    showLearnAlert = true
+                }
+                .buttonStyle(.bordered)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 24)
+            Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+        .background(backgroundGradient.ignoresSafeArea())
     }
+
+    @State private var showLearnAlert = false
 
     private struct TimerCard<Content: View>: View {
         private let content: Content
@@ -268,5 +297,6 @@ struct FastingTimerView: View {
 
 #Preview {
     FastingTimerView()
+        .environmentObject(ContentStore())
         .environmentObject(FastingHistoryStore())
 }

@@ -2,20 +2,24 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var contentStore: ContentStore
-    @AppStorage("cf_currentDay") private var cf_currentDay = 1
-    @AppStorage("cf_carbTarget") private var cf_carbTarget = 0
+    @EnvironmentObject private var carbStore: CarbIntakeStore
+    @AppStorage(Keys.currentDay) private var currentDay = 1
+    @AppStorage(Keys.carbTarget) private var carbTarget = 0
     @AppStorage("cf_quizCorrectDays") private var quizCorrectDaysStorage: String = "[]"
 
     @State private var navigateToDayDetail = false
     @State private var navigateToFastingTimer = false
-    @State private var activeAlert: AlertType?
+    @State private var navigateToCarbTracker = false
+    @State private var navigateToSleep = false
+    @State private var alertConfig: AlertConfig?
+    @State private var showLearnReminder = false
 
     private var totalDays: Int {
         max(contentStore.totalDays, 1)
     }
 
     private var day: Int {
-        max(1, min(cf_currentDay, totalDays))
+        max(1, min(currentDay, totalDays))
     }
 
     private var today: ContentDay? {
@@ -43,7 +47,37 @@ struct HomeView: View {
     }
 
     private var hasCarb: Bool {
-        cf_carbTarget != 0
+        carbTarget != 0
+    }
+
+    private var carbsLeft: Int? {
+        hasCarb ? carbStore.gramsLeft(target: carbTarget) : nil
+    }
+
+    private var hasCompletedDay2: Bool {
+        currentDay >= 3
+    }
+
+    private var fastingUnlockDay: Int {
+        contentStore.days.first {
+            $0.title.trimmingCharacters(in: .whitespacesAndNewlines)
+                .localizedCaseInsensitiveContains("Meal Timing")
+        }?.day ?? 5
+    }
+
+    private var isFastingUnlocked: Bool {
+        currentDay > fastingUnlockDay
+    }
+
+    private var sleepUnlockDay: Int {
+        contentStore.days.first {
+            $0.title.trimmingCharacters(in: .whitespacesAndNewlines)
+                .localizedCaseInsensitiveContains("Sleep & Recovery")
+        }?.day ?? 22
+    }
+
+    private var isSleepUnlocked: Bool {
+        currentDay > sleepUnlockDay
     }
 
     private var canComplete: Bool {
@@ -109,18 +143,25 @@ struct HomeView: View {
                     isActive: $navigateToDayDetail
                 ) { EmptyView() }
                 NavigationLink(
+                    destination: CarbTrackerView(),
+                    isActive: $navigateToCarbTracker
+                ) { EmptyView() }
+                NavigationLink(
                     destination: FastingTimerView(),
                     isActive: $navigateToFastingTimer
                 ) { EmptyView() }
+                NavigationLink(
+                    destination: SleepInsightsView(),
+                    isActive: $navigateToSleep
+                ) { EmptyView() }
             }
         )
-        .alert(item: $activeAlert) { alert in
-            Alert(
-                title: Text(alert.title),
-                message: Text(alert.message),
-                dismissButton: .default(Text("Got it"))
-            )
-        }
+        .alert(item: $alertConfig) { $0.build() }
+        .alert("Learn Sleep & Recovery", isPresented: $showLearnReminder, actions: {
+            Button("OK", role: .cancel) { }
+        }, message: {
+            Text("Switch to the Learn tab and complete Sleep & Recovery to unlock sleep tracking.")
+        })
     }
 
     private var dashboardItems: [DashboardItem] {
@@ -136,28 +177,31 @@ struct HomeView: View {
             DashboardItem(
                 icon: "leaf",
                 title: "Carbs",
-                value: hasCarb ? "\(cf_carbTarget) g" : "— g",
-                subtitle: "Set in Day 2",
-                tint: .green
+                value: hasCompletedDay2 ? (carbsLeft.map { "\($0) g" } ?? "— g") : "Locked",
+                subtitle: hasCompletedDay2
+                    ? (hasCarb ? "Target \(carbTarget) g" : "Set in Day 2")
+                    : "Complete Day 2",
+                tint: hasCompletedDay2 ? .green : Color(.systemGray3)
             ) {
-                activeAlert = .carbs
+                handleCarbTileTap()
             },
             DashboardItem(
                 icon: "timer",
                 title: "Fasting",
-                value: "Not fasting",
-                tint: .orange
+                value: isFastingUnlocked ? "Not fasting" : "Locked",
+                subtitle: isFastingUnlocked ? nil : "Complete Meal Timing",
+                tint: isFastingUnlocked ? .orange : Color(.systemGray3)
             ) {
-                navigateToFastingTimer = true
+                handleFastingTileTap()
             },
             DashboardItem(
                 icon: "moon.fill",
                 title: "Sleep",
-                value: "— h",
-                subtitle: "Add later",
-                tint: .indigo
+                value: isSleepUnlocked ? "— h" : "Locked",
+                subtitle: isSleepUnlocked ? "Add later" : "Complete Sleep & Recovery",
+                tint: isSleepUnlocked ? .indigo : Color(.systemGray3)
             ) {
-                activeAlert = .sleep
+                handleSleepTileTap()
             }
         ]
     }
@@ -289,35 +333,73 @@ struct HomeView: View {
         .opacity(isDisabled ? 0.5 : 1)
     }
 
+    private func handleCarbTileTap() {
+        if hasCompletedDay2 {
+            navigateToCarbTracker = true
+        } else {
+            alertConfig = AlertConfig(
+                title: "Unlock Carbs",
+                message: "Complete Day 2 (Carb Targets) to enable tracking.",
+                primary: .default(Text("Go to Today")) {
+                    navigateToDayDetail = true
+                },
+                secondary: .cancel()
+            )
+        }
+    }
+
+    private func handleFastingTileTap() {
+        if isFastingUnlocked {
+            navigateToFastingTimer = true
+        } else {
+            alertConfig = AlertConfig(
+                title: "Unlock Fasting",
+                message: "Complete Meal Timing to enable the fasting timer.",
+                primary: .default(Text("Go to Today")) {
+                    navigateToDayDetail = true
+                },
+                secondary: .cancel()
+            )
+        }
+    }
+
+    private func handleSleepTileTap() {
+        if isSleepUnlocked {
+            navigateToSleep = true
+        } else {
+            alertConfig = AlertConfig(
+                title: "Unlock Sleep",
+                message: "Complete Sleep & Recovery to enable sleep insights.",
+                primary: .default(Text("Go to Today")) {
+                    navigateToDayDetail = true
+                },
+                secondary: .default(Text("Learn")) {
+                    showLearnReminder = true
+                }
+            )
+        }
+    }
+
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         return formatter
     }()
 
-    private enum AlertType: Identifiable {
-        case carbs
-        case sleep
+    private struct AlertConfig: Identifiable {
+        let id = UUID()
+        let title: String
+        let message: String
+        let primary: Alert.Button?
+        let secondary: Alert.Button?
 
-        var id: Int {
-            hashValue
-        }
-
-        var title: String {
-            switch self {
-            case .carbs:
-                return "Carb tracking"
-            case .sleep:
-                return "Sleep tracking"
-            }
-        }
-
-        var message: String {
-            switch self {
-            case .carbs:
-                return "Carb logging will arrive in a future update."
-            case .sleep:
-                return "Sleep insights are on the roadmap. Stay tuned!"
+        func build() -> Alert {
+            if let primary, let secondary {
+                return Alert(title: Text(title), message: Text(message), primaryButton: primary, secondaryButton: secondary)
+            } else if let primary {
+                return Alert(title: Text(title), message: Text(message), dismissButton: primary)
+            } else {
+                return Alert(title: Text(title), message: Text(message))
             }
         }
     }
@@ -325,8 +407,10 @@ struct HomeView: View {
 
 #Preview {
     let store = ContentStore()
+    let carbStore = CarbIntakeStore()
     return NavigationStack {
         HomeView()
             .environmentObject(store)
+            .environmentObject(carbStore)
     }
 }

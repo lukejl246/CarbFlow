@@ -9,8 +9,10 @@ struct ContentView: View {
     @StateObject private var contentStore: ContentStore
     @StateObject private var quizStore: QuizStore
     @StateObject private var listStore: ContentListStore
+    @StateObject private var carbStore = CarbIntakeStore()
 
     private static let fastingUnlockDay = 18
+    private var carbTrackerUnlocked: Bool { currentDay > 2 }
     
     init() {
         let contentStore = ContentStore()
@@ -30,6 +32,12 @@ struct ContentView: View {
                     Label("Learn", systemImage: learnUnlocked ? "book" : "lock.fill")
                 }
                 .tag(Tab.learn)
+
+            carbTrackerTab
+                .tabItem {
+                    Label("Carbs", systemImage: carbTrackerUnlocked ? "leaf" : "lock.fill")
+                }
+                .tag(Tab.carbs)
 
             homeTab
                 .tabItem {
@@ -58,11 +66,13 @@ struct ContentView: View {
                 .environmentObject(contentStore)
                 .environmentObject(quizStore)
                 .environmentObject(listStore)
+                .environmentObject(carbStore)
         }
     }
 
     private enum Tab {
         case learn
+        case carbs
         case home
         case timer
     }
@@ -79,6 +89,22 @@ struct ContentView: View {
         .environmentObject(quizStore)
         .environmentObject(historyStore)
         .environmentObject(listStore)
+        .environmentObject(carbStore)
+    }
+
+    private var carbTrackerTab: some View {
+        NavigationStack {
+            if carbTrackerUnlocked {
+                CarbTrackerView()
+            } else {
+                LockedPlaceholderView(title: "Carbs", message: "Complete Day 2 (Carb Targets) to unlock")
+            }
+        }
+        .environmentObject(contentStore)
+        .environmentObject(quizStore)
+        .environmentObject(historyStore)
+        .environmentObject(listStore)
+        .environmentObject(carbStore)
     }
 
     private var homeTab: some View {
@@ -89,6 +115,7 @@ struct ContentView: View {
         .environmentObject(quizStore)
         .environmentObject(historyStore)
         .environmentObject(listStore)
+        .environmentObject(carbStore)
     }
 
     private var timerTab: some View {
@@ -103,6 +130,7 @@ struct ContentView: View {
         .environmentObject(quizStore)
         .environmentObject(historyStore)
         .environmentObject(listStore)
+        .environmentObject(carbStore)
     }
 }
 

@@ -24,6 +24,8 @@ enum Keys {
     static let hasOnboarded = "cf_hasOnboarded"
     static let carbTarget = "cf_carbTarget"
     static let hasSetCarbTarget = "cf_hasSetCarbTarget"
+    static let carbEntriesJSON = "cf_carbEntriesJSON"
+    static let carbEntriesDateISO = "cf_carbEntriesDateISO"
 }
 
 struct DayContent {
