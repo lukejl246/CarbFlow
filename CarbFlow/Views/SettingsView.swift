@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var contentStore: ContentStore
+    @EnvironmentObject private var flagStore: FeatureFlagStore
     @AppStorage(Keys.currentDay) private var storedCurrentDay = 1
     @AppStorage(Keys.streakCount) private var storedStreak = 0
     @AppStorage(Keys.lastCompletionISO) private var storedLastISO = ""
@@ -45,6 +46,12 @@ struct SettingsView: View {
                     hasOnboarded = false
                 }
                 .buttonStyle(.bordered)
+
+#if DEBUG
+                NavigationLink("Feature Flags") {
+                    DevFlagsView()
+                }
+#endif
 
                 Button("Reset Progress", role: .destructive) {
                     showResetAlert = true
@@ -101,5 +108,6 @@ struct SettingsView: View {
     NavigationStack {
         SettingsView()
             .environmentObject(ContentStore())
+            .environmentObject(FeatureFlagStore())
     }
 }
