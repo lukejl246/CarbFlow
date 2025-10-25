@@ -51,10 +51,18 @@ final class CarbIntakeStore: ObservableObject {
         guard grams > 0 else { return }
         ensureDayIsCurrent(using: timestamp)
 
+        let trimmedNote = note?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedNote = (trimmedNote?.isEmpty == false) ? trimmedNote : nil
+        let entry = CarbEntry(grams: grams, note: normalizedNote, timestamp: timestamp)
         var updated = entries
-        updated.insert(CarbEntry(grams: grams, note: note, timestamp: timestamp), at: 0)
+        updated.insert(entry, at: 0)
         entries = updated
         save()
+        logFoodLogged(
+            carbsGrams: Double(entry.grams),
+            meal: entry.note,
+            at: entry.timestamp
+        )
     }
 
     func remove(_ id: UUID) {

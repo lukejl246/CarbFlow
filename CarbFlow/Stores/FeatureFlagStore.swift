@@ -309,7 +309,3 @@ final class FeatureFlagStore: ObservableObject {
 
     private let flags: CFFeatureFlags
 }
-
-func cf_logEvent(_ name: String, _ params: [String: Any]) {
-    // no-op for now
-}

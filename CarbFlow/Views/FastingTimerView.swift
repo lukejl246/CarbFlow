@@ -149,6 +149,7 @@ struct FastingTimerView: View {
     private func startFast() {
         fastingStart = Date().timeIntervalSince1970
         isFasting = true
+        logFastStarted()
     }
 
     private func endFast() {
@@ -158,9 +159,11 @@ struct FastingTimerView: View {
         }
         let startDate = Date(timeIntervalSince1970: fastingStart)
         let endDate = Date()
+        let durationSeconds = Int(endDate.timeIntervalSince(startDate))
         historyStore.append(start: startDate, end: endDate)
         fastingStart = 0
         isFasting = false
+        logFastStopped(durationSeconds: durationSeconds)
     }
 
     private func format(_ interval: TimeInterval) -> String {

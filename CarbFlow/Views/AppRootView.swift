@@ -6,6 +6,7 @@ struct AppRootView: View {
 
     @State private var selectedTab: Tab = .home
     @State private var showOnboarding = false
+    @State private var showWhatsNew = false
 
     @StateObject private var historyStore = FastingHistoryStore()
     @StateObject private var contentStore: ContentStore
@@ -13,6 +14,7 @@ struct AppRootView: View {
     @StateObject private var listStore: ContentListStore
     @StateObject private var carbStore = CarbIntakeStore()
     @StateObject private var flagStore = FeatureFlagStore()
+    @StateObject private var whatsNew = WhatsNewStore()
 
     private static let fastingUnlockDay = 18
 
@@ -89,6 +91,7 @@ struct AppRootView: View {
             if !hasOnboarded {
                 showOnboarding = true
             }
+            presentWhatsNewIfNeeded()
         }
         .onChange(of: hasOnboarded) { _, newValue in
             if !newValue {
@@ -165,6 +168,11 @@ struct AppRootView: View {
                 }
             }
         }
+        .onChange(of: whatsNew.shouldPresent) { _, newValue in
+            if newValue {
+                presentWhatsNewIfNeeded()
+            }
+        }
         .sheet(isPresented: $showOnboarding) {
             OnboardingView()
                 .environmentObject(contentStore)
@@ -173,12 +181,21 @@ struct AppRootView: View {
                 .environmentObject(carbStore)
                 .environmentObject(flagStore)
         }
+        .sheet(isPresented: $showWhatsNew) {
+            WhatsNewView(store: whatsNew)
+        }
         .environmentObject(contentStore)
         .environmentObject(quizStore)
         .environmentObject(historyStore)
         .environmentObject(listStore)
         .environmentObject(carbStore)
         .environmentObject(flagStore)
+    }
+
+    private func presentWhatsNewIfNeeded() {
+        guard whatsNew.shouldPresent, !showWhatsNew else { return }
+        showWhatsNew = true
+        cf_logEvent("whatsnew_show", ["version": whatsNew.payload.versionKey])
     }
 
     private enum Tab: Hashable {

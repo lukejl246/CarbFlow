@@ -13,6 +13,11 @@ struct SettingsView: View {
 
     @State private var selectedDay = 1
     @State private var showResetAlert = false
+#if DEBUG
+    @State private var showWhatsNewSheet = false
+    @State private var whatsNewStore = WhatsNewStore()
+    @State private var analyticsEnabled = AnalyticsRouter.enabled
+#endif
 
     private var totalDays: Int {
         max(contentStore.totalDays, 1)
@@ -42,12 +47,22 @@ struct SettingsView: View {
             }
 
             Section("Developer Tools") {
+#if DEBUG
+                analyticsToggleCard
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+#endif
                 Button("Show Onboarding") {
                     hasOnboarded = false
                 }
                 .buttonStyle(.bordered)
 
 #if DEBUG
+                Button("Show What's New") {
+                    presentWhatsNew()
+                }
+                .buttonStyle(.bordered)
+
                 NavigationLink("Feature Flags") {
                     DevFlagsView()
                 }
@@ -62,10 +77,18 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .onAppear {
             syncSelectedDay()
+#if DEBUG
+            analyticsEnabled = AnalyticsRouter.enabled
+#endif
         }
         .onChange(of: storedCurrentDay) { _ in
             syncSelectedDay()
         }
+#if DEBUG
+        .onChange(of: analyticsEnabled) { _, newValue in
+            AnalyticsRouter.enabled = newValue
+        }
+#endif
         .alert("Reset Progress?", isPresented: $showResetAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Reset", role: .destructive) {
@@ -74,6 +97,11 @@ struct SettingsView: View {
         } message: {
             Text("This clears streaks, completions, and carb target so you can restart.")
         }
+#if DEBUG
+        .sheet(isPresented: $showWhatsNewSheet) {
+            WhatsNewView(store: whatsNewStore)
+        }
+#endif
     }
 
     private func syncSelectedDay() {
@@ -102,6 +130,29 @@ struct SettingsView: View {
         quizCorrectDaysStorage = "[]"
         selectedDay = 1
     }
+
+#if DEBUG
+    private func presentWhatsNew() {
+        UserDefaults.standard.removeObject(forKey: CFKeys.whatsNewLastSeen)
+        whatsNewStore = WhatsNewStore()
+        showWhatsNewSheet = true
+    }
+
+    private var analyticsToggleCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle("Analytics (console)", isOn: $analyticsEnabled)
+                .tint(.accentColor)
+                .frame(minHeight: 44)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+        )
+    }
+#endif
 }
 
 #Preview {
