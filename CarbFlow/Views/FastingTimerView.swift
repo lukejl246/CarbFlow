@@ -3,10 +3,9 @@ import Combine
 
 struct FastingTimerView: View {
     @AppStorage(Keys.currentDay) private var currentDay = 1
-    @AppStorage(Keys.isFasting) private var isFasting = false
-    @AppStorage(Keys.fastingStart) private var fastingStart = 0.0
     @EnvironmentObject var contentStore: ContentStore
     @EnvironmentObject private var historyStore: FastingHistoryStore
+    @EnvironmentObject private var fastingStore: FastingStore
     @Environment(\.dismiss) private var dismiss
 
     @State private var now = Date()
@@ -23,8 +22,7 @@ struct FastingTimerView: View {
     }
 
     private var elapsed: TimeInterval {
-        guard isFasting, fastingStart > 0 else { return 0 }
-        return max(now.timeIntervalSince1970 - fastingStart, 0)
+        fastingStore.elapsed(at: now)
     }
 
     private var backgroundGradient: LinearGradient {
@@ -86,7 +84,7 @@ struct FastingTimerView: View {
                         now = date
                     }
 
-                if isFasting {
+                if fastingStore.isFasting {
                     Button(role: .destructive, action: endFast) {
                         Text("End Fast")
                             .fontWeight(.semibold)
@@ -147,23 +145,11 @@ struct FastingTimerView: View {
     }
 
     private func startFast() {
-        fastingStart = Date().timeIntervalSince1970
-        isFasting = true
-        logFastStarted()
+        _ = fastingStore.startFast()
     }
 
     private func endFast() {
-        guard fastingStart > 0 else {
-            isFasting = false
-            return
-        }
-        let startDate = Date(timeIntervalSince1970: fastingStart)
-        let endDate = Date()
-        let durationSeconds = Int(endDate.timeIntervalSince(startDate))
-        historyStore.append(start: startDate, end: endDate)
-        fastingStart = 0
-        isFasting = false
-        logFastStopped(durationSeconds: durationSeconds)
+        _ = fastingStore.stopFast()
     }
 
     private func format(_ interval: TimeInterval) -> String {
@@ -299,7 +285,12 @@ struct FastingTimerView: View {
 }
 
 #Preview {
-    FastingTimerView()
-        .environmentObject(ContentStore())
-        .environmentObject(FastingHistoryStore())
+    let contentStore = ContentStore()
+    let historyStore = FastingHistoryStore()
+    let fastingStore = FastingStore(historyStore: historyStore)
+
+    return FastingTimerView()
+        .environmentObject(contentStore)
+        .environmentObject(historyStore)
+        .environmentObject(fastingStore)
 }

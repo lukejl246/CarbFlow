@@ -17,6 +17,7 @@ struct SettingsView: View {
     @State private var showWhatsNewSheet = false
     @State private var whatsNewStore = WhatsNewStore()
     @State private var analyticsEnabled = AnalyticsRouter.enabled
+    @State private var errorReportingEnabled = CFErrorReportingRouter.shared.enabled
 #endif
 
     private var totalDays: Int {
@@ -49,6 +50,9 @@ struct SettingsView: View {
             Section("Developer Tools") {
 #if DEBUG
                 analyticsToggleCard
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                errorReportingToggleCard
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
 #endif
@@ -87,6 +91,9 @@ struct SettingsView: View {
 #if DEBUG
         .onChange(of: analyticsEnabled) { _, newValue in
             AnalyticsRouter.enabled = newValue
+        }
+        .onChange(of: errorReportingEnabled) { _, newValue in
+            CFErrorReportingRouter.shared.enabled = newValue
         }
 #endif
         .alert("Reset Progress?", isPresented: $showResetAlert) {
@@ -141,6 +148,21 @@ struct SettingsView: View {
     private var analyticsToggleCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             Toggle("Analytics (console)", isOn: $analyticsEnabled)
+                .tint(.accentColor)
+                .frame(minHeight: 44)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+        )
+    }
+
+    private var errorReportingToggleCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle("Error reporting (console)", isOn: $errorReportingEnabled)
                 .tint(.accentColor)
                 .frame(minHeight: 44)
         }

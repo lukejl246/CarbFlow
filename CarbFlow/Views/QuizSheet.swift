@@ -6,6 +6,7 @@ struct QuizSheet: View {
     @Binding var isPresented: Bool
     let onCorrect: () -> Void
 
+    @StateObject private var engine: QuizEngine
     @State private var selectedIndex: Int?
     @State private var feedback: Feedback?
     @State private var showConfetti = false
@@ -14,6 +15,7 @@ struct QuizSheet: View {
         self.quiz = quiz
         self._isPresented = isPresented
         self.onCorrect = onCorrect
+        _engine = StateObject(wrappedValue: QuizEngine(quiz: quiz))
         if hasStoredCorrectAnswer {
             _selectedIndex = State(initialValue: quiz.correctIndex)
             _feedback = State(initialValue: Feedback(isCorrect: true, message: "Correct!"))
@@ -113,6 +115,9 @@ struct QuizSheet: View {
         .onDisappear {
             showConfetti = false
         }
+        .onAppear {
+            engine.start()
+        }
     }
 
     private func submit() {
@@ -121,22 +126,39 @@ struct QuizSheet: View {
             return
         }
 
-        guard let selectedIndex else { return }
+        let result = engine.submit(selection: selectedIndex)
 
-        let isCorrect = selectedIndex == quiz.correctIndex
+        switch result {
+        case .failure(let failure):
+            handleSubmissionFailure(failure)
+            return
+        case .success(let isCorrect):
+            guard let selectedIndex else { return }
 
-        withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
-            feedback = Feedback(
-                isCorrect: isCorrect,
-                message: isCorrect ? "Correct!" : "Not quite. Try again."
-            )
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                feedback = Feedback(
+                    isCorrect: isCorrect,
+                    message: isCorrect ? "Correct!" : "Not quite. Try again."
+                )
+            }
+
+            if isCorrect {
+                onCorrect()
+                showConfetti = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    showConfetti = false
+                }
+            }
         }
+    }
 
-        if isCorrect {
-            onCorrect()
-            showConfetti = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                showConfetti = false
+    private func handleSubmissionFailure(_ failure: QuizEngine.SubmissionFailure) {
+        switch failure {
+        case .missingSelection:
+            break
+        case .invalidSelection, .missingContent, .scoringMismatch:
+            withAnimation(.easeInOut(duration: 0.2)) {
+                feedback = Feedback(isCorrect: false, message: failureMessage(for: failure))
             }
         }
     }
@@ -187,6 +209,17 @@ struct QuizSheet: View {
     private struct Feedback {
         let isCorrect: Bool
         let message: String
+    }
+
+    private func failureMessage(for failure: QuizEngine.SubmissionFailure) -> String {
+        switch failure {
+        case .missingSelection:
+            return "Select an answer to continue."
+        case .invalidSelection:
+            return "That option isn't available. Please try again."
+        case .missingContent, .scoringMismatch:
+            return "We couldn't grade this quiz right now. Please close and retry later."
+        }
     }
 }
 

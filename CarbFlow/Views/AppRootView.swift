@@ -8,21 +8,25 @@ struct AppRootView: View {
     @State private var showOnboarding = false
     @State private var showWhatsNew = false
 
-    @StateObject private var historyStore = FastingHistoryStore()
+    @StateObject private var historyStore: FastingHistoryStore
     @StateObject private var contentStore: ContentStore
     @StateObject private var quizStore: QuizStore
     @StateObject private var listStore: ContentListStore
     @StateObject private var carbStore = CarbIntakeStore()
     @StateObject private var flagStore = FeatureFlagStore()
+    @StateObject private var fastingStore: FastingStore
     @StateObject private var whatsNew = WhatsNewStore()
 
     private static let fastingUnlockDay = 18
 
     init() {
         let contentStore = ContentStore()
+        let historyStore = FastingHistoryStore()
         _contentStore = StateObject(wrappedValue: contentStore)
         _quizStore = StateObject(wrappedValue: QuizStore(contentStore: contentStore))
         _listStore = StateObject(wrappedValue: ContentListStore())
+        _historyStore = StateObject(wrappedValue: historyStore)
+        _fastingStore = StateObject(wrappedValue: FastingStore(historyStore: historyStore))
     }
 
     private var learnUnlocked: Bool { currentDay > 1 }
@@ -180,6 +184,8 @@ struct AppRootView: View {
                 .environmentObject(listStore)
                 .environmentObject(carbStore)
                 .environmentObject(flagStore)
+                .environmentObject(historyStore)
+                .environmentObject(fastingStore)
         }
         .sheet(isPresented: $showWhatsNew) {
             WhatsNewView(store: whatsNew)
@@ -187,6 +193,7 @@ struct AppRootView: View {
         .environmentObject(contentStore)
         .environmentObject(quizStore)
         .environmentObject(historyStore)
+        .environmentObject(fastingStore)
         .environmentObject(listStore)
         .environmentObject(carbStore)
         .environmentObject(flagStore)
