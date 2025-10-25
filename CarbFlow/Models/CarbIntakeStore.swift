@@ -1,5 +1,5 @@
 import SwiftUI
-import Combine
+@preconcurrency import Combine
 
 struct CarbEntry: Identifiable, Codable, Equatable {
     let id: UUID

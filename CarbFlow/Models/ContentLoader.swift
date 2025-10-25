@@ -1,5 +1,5 @@
 import Foundation
-import Combine
+@preconcurrency import Combine
 
 struct ContentDay: Identifiable, Codable, Equatable {
     let id: Int

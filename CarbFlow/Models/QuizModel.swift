@@ -1,5 +1,5 @@
 import SwiftUI
-import Combine
+@preconcurrency import Combine
 
 struct Quiz: Identifiable, Codable, Equatable {
     var id: Int { day }

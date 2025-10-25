@@ -1,5 +1,5 @@
 import Foundation
-import Combine
+@preconcurrency import Combine
 
 struct ContentList: Codable, Identifiable, Equatable {
     let id: String
