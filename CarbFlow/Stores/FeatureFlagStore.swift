@@ -28,7 +28,7 @@ final class FeatureFlagStore: ObservableObject {
     @Published var challengeNoSugar7dEnabled: Bool
     @Published var fastingEnabled: Bool
 
-    init(flags: CFFeatureFlags = .shared) {
+    init(flags: CFFeatureFlags) {
         self.flags = flags
         self.loggingEnabled = flags.isLoggingEnabled
         self.recipesEnabled = flags.isRecipesEnabled
@@ -55,6 +55,10 @@ final class FeatureFlagStore: ObservableObject {
         self.challengeSteps7dEnabled = flags.isChallengeSteps7dEnabled
         self.challengeNoSugar7dEnabled = flags.isChallengeNoSugar7dEnabled
         self.fastingEnabled = flags.isFastingEnabled
+    }
+
+    convenience init() {
+        self.init(flags: CFFeatureFlags.shared)
     }
 
     func setLogging(_ enabled: Bool) {

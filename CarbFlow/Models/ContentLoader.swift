@@ -1,5 +1,5 @@
 import Foundation
-@preconcurrency import Combine
+import Combine
 
 struct ContentDay: Identifiable, Codable, Equatable {
     let id: Int
@@ -64,11 +64,6 @@ struct ContentDay: Identifiable, Codable, Equatable {
     }
 }
 
-struct ContentPayload: Codable {
-    let contentVersion: Int
-    let days: [ContentDay]
-}
-
 @MainActor
 final class ContentStore: ObservableObject {
     @Published private(set) var days: [ContentDay] = []
@@ -76,11 +71,11 @@ final class ContentStore: ObservableObject {
 
     var totalDays: Int {
         let count = days.count
-        return count > 0 ? count : 30
+        return count > 0 ? count : 1
     }
 
     init() {
-        loadFromBundle()
+        loadDefaultContent()
     }
 
     func day(_ day: Int) -> ContentDay? {
@@ -97,51 +92,30 @@ final class ContentStore: ObservableObject {
 
     func refreshFromBundle() {
         #if DEBUG
-        loadFromBundle()
+        loadDefaultContent()
         #endif
     }
 
-    private func loadFromBundle() {
-        guard let url = Bundle.main.url(forResource: "modules", withExtension: "json") else {
-            applyPlaceholder()
-            return
-        }
+    private func loadDefaultContent() {
+        let overview = ContentDay(
+            day: 1,
+            title: "Daily Overview",
+            summary: "Check in each day to review habits and plan your next step.",
+            keyIdea: "Tiny adjustments add up. Capture how you're feeling and pick one focus.",
+            faqs: [
+                "How often should I check in? Once per day works for most people.",
+                "What should I record? Simple notes about meals, energy, or goals."
+            ],
+            readMins: 1,
+            tags: [],
+            prerequisites: [],
+            requiresCarbTarget: false,
+            requiresQuizCorrect: false,
+            listRefs: [],
+            evidenceIds: []
+        )
 
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let payload = try decoder.decode(ContentPayload.self, from: data)
-            apply(payload: payload)
-        } catch {
-            print("[ContentStore] Failed to load modules.json: \(error)")
-            applyPlaceholder()
-        }
-    }
-
-    private func apply(payload: ContentPayload) {
-        let sortedDays = payload.days.sorted(by: { $0.day < $1.day })
-        self.days = sortedDays
-        self.contentVersion = payload.contentVersion
-    }
-
-    private func applyPlaceholder() {
-        let placeholderDays = (1...30).map { index -> ContentDay in
-            ContentDay(
-                day: index,
-                title: "Day \(index)",
-                summary: "Content will be available soon.",
-                keyIdea: "Stay consistent—more lessons are on the way.",
-                faqs: [],
-                readMins: 2,
-                tags: [],
-                prerequisites: Array(1..<index),
-                requiresCarbTarget: index == 2,
-                requiresQuizCorrect: false,
-                listRefs: [],
-                evidenceIds: []
-            )
-        }
-        self.days = placeholderDays
-        self.contentVersion = 0
+        self.days = [overview]
+        self.contentVersion = 1
     }
 }

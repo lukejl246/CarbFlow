@@ -10,11 +10,8 @@ struct AppRootView: View {
 
     @StateObject private var historyStore: FastingHistoryStore
     @StateObject private var contentStore: ContentStore
-    @StateObject private var quizStore: QuizStore
     @StateObject private var listStore: ContentListStore
-    @StateObject private var carbStore = CarbIntakeStore()
     @StateObject private var flagStore = FeatureFlagStore()
-    @StateObject private var fastingStore: FastingStore
     @StateObject private var whatsNew = WhatsNewStore()
 
     private static let fastingUnlockDay = 18
@@ -23,20 +20,12 @@ struct AppRootView: View {
         let contentStore = ContentStore()
         let historyStore = FastingHistoryStore()
         _contentStore = StateObject(wrappedValue: contentStore)
-        _quizStore = StateObject(wrappedValue: QuizStore(contentStore: contentStore))
         _listStore = StateObject(wrappedValue: ContentListStore())
         _historyStore = StateObject(wrappedValue: historyStore)
-        _fastingStore = StateObject(wrappedValue: FastingStore(historyStore: historyStore))
     }
-
-    private var learnUnlocked: Bool { currentDay > 1 }
-    private var carbTrackerUnlocked: Bool { currentDay > 2 }
-    private var timerUnlocked: Bool { currentDay > Self.fastingUnlockDay }
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            learnTab
-
             if flagStore.loggingEnabled {
                 loggingTab
             }
@@ -57,39 +46,17 @@ struct AppRootView: View {
                 ketonesTab
             }
 
-            if flagStore.coachEnabled {
-                coachTab
-            }
-
-            if flagStore.quizzesEnabled {
-                quizzesTab
-            }
-
-            if flagStore.programmeEnabled {
-                programmeTab
-            }
-
-            if flagStore.challengesEnabled {
-                challengesTab
-            }
-
             if flagStore.fastingEnabled {
                 fastingTab
             }
 
-            carbTrackerTab
             homeTab
-            timerTab
         }
         .animation(.easeInOut(duration: 0.25), value: flagStore.loggingEnabled)
         .animation(.easeInOut(duration: 0.25), value: flagStore.recipesEnabled)
         .animation(.easeInOut(duration: 0.25), value: flagStore.healthKitEnabled)
         .animation(.easeInOut(duration: 0.25), value: flagStore.wearablesEnabled)
         .animation(.easeInOut(duration: 0.25), value: flagStore.ketonesEnabled)
-        .animation(.easeInOut(duration: 0.25), value: flagStore.coachEnabled)
-        .animation(.easeInOut(duration: 0.25), value: flagStore.quizzesEnabled)
-        .animation(.easeInOut(duration: 0.25), value: flagStore.programmeEnabled)
-        .animation(.easeInOut(duration: 0.25), value: flagStore.challengesEnabled)
         .animation(.easeInOut(duration: 0.25), value: flagStore.fastingEnabled)
         .onAppear {
             if !hasOnboarded {
@@ -137,34 +104,6 @@ struct AppRootView: View {
                 }
             }
         }
-        .onChange(of: flagStore.coachEnabled) { _, enabled in
-            if !enabled && selectedTab == .coach {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    selectedTab = .home
-                }
-            }
-        }
-        .onChange(of: flagStore.quizzesEnabled) { _, enabled in
-            if !enabled && selectedTab == .quizzes {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    selectedTab = .home
-                }
-            }
-        }
-        .onChange(of: flagStore.programmeEnabled) { _, enabled in
-            if !enabled && selectedTab == .programme {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    selectedTab = .home
-                }
-            }
-        }
-        .onChange(of: flagStore.challengesEnabled) { _, enabled in
-            if !enabled && selectedTab == .challenges {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    selectedTab = .home
-                }
-            }
-        }
         .onChange(of: flagStore.fastingEnabled) { _, enabled in
             if !enabled && selectedTab == .fasting {
                 withAnimation(.easeInOut(duration: 0.25)) {
@@ -180,22 +119,16 @@ struct AppRootView: View {
         .sheet(isPresented: $showOnboarding) {
             OnboardingView()
                 .environmentObject(contentStore)
-                .environmentObject(quizStore)
                 .environmentObject(listStore)
-                .environmentObject(carbStore)
                 .environmentObject(flagStore)
                 .environmentObject(historyStore)
-                .environmentObject(fastingStore)
         }
         .sheet(isPresented: $showWhatsNew) {
             WhatsNewView(store: whatsNew)
         }
         .environmentObject(contentStore)
-        .environmentObject(quizStore)
         .environmentObject(historyStore)
-        .environmentObject(fastingStore)
         .environmentObject(listStore)
-        .environmentObject(carbStore)
         .environmentObject(flagStore)
     }
 
@@ -206,34 +139,13 @@ struct AppRootView: View {
     }
 
     private enum Tab: Hashable {
-        case learn
         case logging
         case recipes
         case health
         case wearables
         case ketones
-        case coach
-        case quizzes
-        case programme
-        case challenges
         case fasting
-        case carbs
         case home
-        case timer
-    }
-
-    private var learnTab: some View {
-        NavigationStack {
-            if learnUnlocked {
-                LearnView(goToToday: { selectedTab = .home })
-            } else {
-                LockedPlaceholderView(title: "Learn", message: "Complete Day 1 to unlock")
-            }
-        }
-        .tabItem {
-            Label("Learn", systemImage: learnUnlocked ? "book" : "lock.fill")
-        }
-        .tag(Tab.learn)
     }
 
     private var loggingTab: some View {
@@ -293,50 +205,6 @@ struct AppRootView: View {
         .tag(Tab.ketones)
     }
 
-    private var coachTab: some View {
-        NavigationStack {
-            CoachDashboard()
-                .navigationTitle("Coach")
-        }
-        .tabItem {
-            Label("Coach", systemImage: "person.2.fill")
-        }
-        .tag(Tab.coach)
-    }
-
-    private var quizzesTab: some View {
-        NavigationStack {
-            QuizzesDashboard()
-                .navigationTitle("Quizzes")
-        }
-        .tabItem {
-            Label("Quizzes", systemImage: "questionmark.circle")
-        }
-        .tag(Tab.quizzes)
-    }
-
-    private var programmeTab: some View {
-        NavigationStack {
-            ProgrammeView()
-                .environmentObject(flagStore)
-        }
-        .tabItem {
-            Label("Programme", systemImage: "list.bullet.rectangle")
-        }
-        .tag(Tab.programme)
-    }
-
-    private var challengesTab: some View {
-        NavigationStack {
-            ChallengesView()
-                .environmentObject(flagStore)
-        }
-        .tabItem {
-            Label("Challenges", systemImage: "flag.2.crossed")
-        }
-        .tag(Tab.challenges)
-    }
-
     private var fastingTab: some View {
         NavigationStack {
             FastingView()
@@ -346,20 +214,6 @@ struct AppRootView: View {
             Label("Fasting", systemImage: "hourglass.bottomhalf.filled")
         }
         .tag(Tab.fasting)
-    }
-
-    private var carbTrackerTab: some View {
-        NavigationStack {
-            if carbTrackerUnlocked {
-                CarbTrackerView()
-            } else {
-                LockedPlaceholderView(title: "Carbs", message: "Complete Day 2 (Carb Targets) to unlock")
-            }
-        }
-        .tabItem {
-            Label("Carbs", systemImage: carbTrackerUnlocked ? "leaf" : "lock.fill")
-        }
-        .tag(Tab.carbs)
     }
 
     private var homeTab: some View {
@@ -372,19 +226,6 @@ struct AppRootView: View {
         .tag(Tab.home)
     }
 
-    private var timerTab: some View {
-        NavigationStack {
-            if timerUnlocked {
-                FastingTimerView()
-            } else {
-                LockedPlaceholderView(title: "Timer", message: "Complete Day 18 (Meal Timing) to unlock")
-            }
-        }
-        .tabItem {
-            Label("Timer", systemImage: timerUnlocked ? "timer" : "lock.fill")
-        }
-        .tag(Tab.timer)
-    }
 }
 
 private struct LoggingDashboard: View {
@@ -603,98 +444,6 @@ private struct KetonesDashboard: View {
 }
 
 private struct KetonesCard: View {
-    let title: String
-    let message: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.headline)
-            Text(message)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
-        )
-    }
-}
-
-private struct CoachDashboard: View {
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                CoachCard(
-                    title: "Personalised Guidance",
-                    message: "Enable the coach feature to receive nudges based on your program progress."
-                )
-                CoachCard(
-                    title: "Habit Focus",
-                    message: "We’ll highlight a daily habit to reinforce consistency and accountability."
-                )
-                CoachCard(
-                    title: "Stay Tuned",
-                    message: "More coaching modules are in development—flag will unlock when ready."
-                )
-            }
-            .padding(.vertical, 32)
-            .padding(.horizontal, 20)
-        }
-        .background(Color(.systemGray6).ignoresSafeArea())
-    }
-}
-
-private struct CoachCard: View {
-    let title: String
-    let message: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.headline)
-            Text(message)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
-        )
-    }
-}
-
-private struct QuizzesDashboard: View {
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                QuizzesCard(
-                    title: "Quiz adventures",
-                    message: "Flip this on when quizzes are ready to preview question flow and progress tracking."
-                )
-                QuizzesCard(
-                    title: "Knowledge checks",
-                    message: "Expect short, supportive quizzes to reinforce each day’s key takeaways."
-                )
-                QuizzesCard(
-                    title: "Stay tuned",
-                    message: "We’ll share results summaries and gentle encouragement once the feature ships."
-                )
-            }
-            .padding(.vertical, 32)
-            .padding(.horizontal, 20)
-        }
-        .background(Color(.systemGray6).ignoresSafeArea())
-    }
-}
-
-private struct QuizzesCard: View {
     let title: String
     let message: String
 

@@ -4,6 +4,7 @@ struct WhatsNewView: View {
     @ObservedObject var store: WhatsNewStore
     @Environment(\.dismiss) private var dismiss
     @State private var hasAppeared = false
+    @State private var showHelp = false
 
     var body: some View {
         ZStack {
@@ -20,6 +21,11 @@ struct WhatsNewView: View {
         .onAppear {
             guard !hasAppeared else { return }
             hasAppeared = true
+        }
+        .sheet(isPresented: $showHelp) {
+            NavigationStack {
+                HelpCardView()
+            }
         }
     }
 
@@ -61,6 +67,15 @@ struct WhatsNewView: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundColor(.accentColor)
+
+                Button(action: handleHelpTap) {
+                    Text("Need help?")
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: 44)
+                }
+                .buttonStyle(.plain)
+                .foregroundColor(.secondary)
             }
         }
     }
@@ -72,6 +87,11 @@ struct WhatsNewView: View {
 
     private func handleReleaseNotesTap() {
         cf_logEvent("whatsnew_release_notes_tap", ["version": store.payload.versionKey])
+    }
+
+    private func handleHelpTap() {
+        cf_logEvent("whatsnew_help_tap", ["version": store.payload.versionKey])
+        showHelp = true
     }
 }
 

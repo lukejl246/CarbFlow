@@ -23,48 +23,48 @@ struct DevFlagsView: View {
     // MARK: - Flag Mappings
 
     private var primaryMappings: [FlagMapping] {
-        [
-            .init(flag: .logging, title: "Logging", get: { flags.loggingEnabled }, set: flags.setLogging),
-            .init(flag: .recipes, title: "Recipes", get: { flags.recipesEnabled }, set: flags.setRecipes),
-            .init(flag: .healthKit, title: "HealthKit", get: { flags.healthKitEnabled }, set: flags.setHealthKit),
-            .init(flag: .wearables, title: "Wearables", get: { flags.wearablesEnabled }, set: flags.setWearables),
-            .init(flag: .ketones, title: "Ketones", get: { flags.ketonesEnabled }, set: flags.setKetones),
-            .init(flag: .coach, title: "Coach", get: { flags.coachEnabled }, set: flags.setCoach),
-            .init(flag: .quizzes, title: "Quizzes", get: { flags.quizzesEnabled }, set: flags.setQuizzes),
-            .init(flag: .programme, title: "Programme", get: { flags.programmeEnabled }, set: flags.setProgramme),
-            .init(flag: .challenges, title: "Challenges", get: { flags.challengesEnabled }, set: flags.setChallenges),
-            .init(flag: .fasting, title: "Fasting", get: { flags.fastingEnabled }, set: flags.setFasting)
-        ]
+        var mappings: [FlagMapping] = []
+        mappings.append(.init(flag: .logging, title: "Logging", get: { flags.loggingEnabled }, set: flags.setLogging))
+        mappings.append(.init(flag: .recipes, title: "Recipes", get: { flags.recipesEnabled }, set: flags.setRecipes))
+        mappings.append(.init(flag: .healthKit, title: "HealthKit", get: { flags.healthKitEnabled }, set: flags.setHealthKit))
+        mappings.append(.init(flag: .wearables, title: "Wearables", get: { flags.wearablesEnabled }, set: flags.setWearables))
+        mappings.append(.init(flag: .ketones, title: "Ketones", get: { flags.ketonesEnabled }, set: flags.setKetones))
+        mappings.append(.init(flag: .coach, title: "Coach", get: { flags.coachEnabled }, set: flags.setCoach))
+        mappings.append(.init(flag: .quizzes, title: "Quizzes", get: { flags.quizzesEnabled }, set: flags.setQuizzes))
+        mappings.append(.init(flag: .programme, title: "Programme", get: { flags.programmeEnabled }, set: flags.setProgramme))
+        mappings.append(.init(flag: .challenges, title: "Challenges", get: { flags.challengesEnabled }, set: flags.setChallenges))
+        mappings.append(.init(flag: .fasting, title: "Fasting", get: { flags.fastingEnabled }, set: flags.setFasting))
+        return mappings
     }
 
     private var quizMappings: [FlagMapping] {
-        [
-            .init(flag: .quizBasics, title: "Quiz: Basics", get: { flags.quizBasicsEnabled }, set: flags.setQuizBasics),
-            .init(flag: .quizLabels, title: "Quiz: Labels", get: { flags.quizLabelsEnabled }, set: flags.setQuizLabels),
-            .init(flag: .quizElectrolytes, title: "Quiz: Electrolytes", get: { flags.quizElectrolytesEnabled }, set: flags.setQuizElectrolytes),
-            .init(flag: .quizFasting101, title: "Quiz: Fasting 101", get: { flags.quizFasting101Enabled }, set: flags.setQuizFasting101)
-        ]
+        var mappings: [FlagMapping] = []
+        mappings.append(.init(flag: .quizBasics, title: "Quiz: Basics", get: { flags.quizBasicsEnabled }, set: flags.setQuizBasics))
+        mappings.append(.init(flag: .quizLabels, title: "Quiz: Labels", get: { flags.quizLabelsEnabled }, set: flags.setQuizLabels))
+        mappings.append(.init(flag: .quizElectrolytes, title: "Quiz: Electrolytes", get: { flags.quizElectrolytesEnabled }, set: flags.setQuizElectrolytes))
+        mappings.append(.init(flag: .quizFasting101, title: "Quiz: Fasting 101", get: { flags.quizFasting101Enabled }, set: flags.setQuizFasting101))
+        return mappings
     }
 
     private var dashboardMappings: [FlagMapping] {
-        [
-            .init(flag: .dashboardSummary, title: "Summary", get: { flags.dashboardSummaryEnabled }, set: flags.setDashboardSummary),
-            .init(flag: .dashboardTrends, title: "Trends", get: { flags.dashboardTrendsEnabled }, set: flags.setDashboardTrends),
-            .init(flag: .dashboardStreaks, title: "Streaks", get: { flags.dashboardStreaksEnabled }, set: flags.setDashboardStreaks),
-            .init(flag: .dashboardMacros, title: "Macros", get: { flags.dashboardMacrosEnabled }, set: flags.setDashboardMacros),
-            .init(flag: .dashboardHydration, title: "Hydration", get: { flags.dashboardHydrationEnabled }, set: flags.setDashboardHydration),
-            .init(flag: .dashboardSleep, title: "Sleep", get: { flags.dashboardSleepEnabled }, set: flags.setDashboardSleep),
-            .init(flag: .dashboardReadiness, title: "Readiness", get: { flags.dashboardReadinessEnabled }, set: flags.setDashboardReadiness)
-        ]
+        var mappings: [FlagMapping] = []
+        mappings.append(.init(flag: .dashboardSummary, title: "Summary", get: { flags.dashboardSummaryEnabled }, set: flags.setDashboardSummary))
+        mappings.append(.init(flag: .dashboardTrends, title: "Trends", get: { flags.dashboardTrendsEnabled }, set: flags.setDashboardTrends))
+        mappings.append(.init(flag: .dashboardStreaks, title: "Streaks", get: { flags.dashboardStreaksEnabled }, set: flags.setDashboardStreaks))
+        mappings.append(.init(flag: .dashboardMacros, title: "Macros", get: { flags.dashboardMacrosEnabled }, set: flags.setDashboardMacros))
+        mappings.append(.init(flag: .dashboardHydration, title: "Hydration", get: { flags.dashboardHydrationEnabled }, set: flags.setDashboardHydration))
+        mappings.append(.init(flag: .dashboardSleep, title: "Sleep", get: { flags.dashboardSleepEnabled }, set: flags.setDashboardSleep))
+        mappings.append(.init(flag: .dashboardReadiness, title: "Readiness", get: { flags.dashboardReadinessEnabled }, set: flags.setDashboardReadiness))
+        return mappings
     }
 
     private var challengeMappings: [FlagMapping] {
-        [
-            .init(flag: .challengeElectrolytes7d, title: "Challenge: Electrolytes 7d", get: { flags.challengeElectrolytes7dEnabled }, set: flags.setChallengeElectrolytes7d),
-            .init(flag: .challengeHydration7d, title: "Challenge: Hydration 7d", get: { flags.challengeHydration7dEnabled }, set: flags.setChallengeHydration7d),
-            .init(flag: .challengeSteps7d, title: "Challenge: Steps 7d", get: { flags.challengeSteps7dEnabled }, set: flags.setChallengeSteps7d),
-            .init(flag: .challengeNoSugar7d, title: "Challenge: No Sugar 7d", get: { flags.challengeNoSugar7dEnabled }, set: flags.setChallengeNoSugar7d)
-        ]
+        var mappings: [FlagMapping] = []
+        mappings.append(.init(flag: .challengeElectrolytes7d, title: "Challenge: Electrolytes 7d", get: { flags.challengeElectrolytes7dEnabled }, set: flags.setChallengeElectrolytes7d))
+        mappings.append(.init(flag: .challengeHydration7d, title: "Challenge: Hydration 7d", get: { flags.challengeHydration7dEnabled }, set: flags.setChallengeHydration7d))
+        mappings.append(.init(flag: .challengeSteps7d, title: "Challenge: Steps 7d", get: { flags.challengeSteps7dEnabled }, set: flags.setChallengeSteps7d))
+        mappings.append(.init(flag: .challengeNoSugar7d, title: "Challenge: No Sugar 7d", get: { flags.challengeNoSugar7dEnabled }, set: flags.setChallengeNoSugar7d))
+        return mappings
     }
 
     private var allMappings: [FlagMapping] {

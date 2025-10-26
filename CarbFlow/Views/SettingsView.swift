@@ -7,8 +7,6 @@ struct SettingsView: View {
     @AppStorage(Keys.streakCount) private var storedStreak = 0
     @AppStorage(Keys.lastCompletionISO) private var storedLastISO = ""
     @AppStorage(Keys.hasOnboarded) private var hasOnboarded = false
-    @AppStorage(Keys.carbTarget) private var storedCarbTarget = 0
-    @AppStorage(Keys.hasSetCarbTarget) private var hasSetCarbTarget = false
     @AppStorage("cf_quizCorrectDays") private var quizCorrectDaysStorage: String = "[]"
 
     @State private var selectedDay = 1
@@ -30,6 +28,11 @@ struct SettingsView: View {
                 Label("About", systemImage: "info.circle")
                 Label("Disclaimer", systemImage: "exclamationmark.triangle")
                 Label("Support", systemImage: "envelope")
+                NavigationLink {
+                    HelpCardView()
+                } label: {
+                    Label("Help", systemImage: "questionmark.circle")
+                }
             }
 
             Section("Progress Controls") {
@@ -56,11 +59,6 @@ struct SettingsView: View {
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
 #endif
-                Button("Show Onboarding") {
-                    hasOnboarded = false
-                }
-                .buttonStyle(.bordered)
-
 #if DEBUG
                 Button("Show What's New") {
                     presentWhatsNew()
@@ -121,10 +119,6 @@ struct SettingsView: View {
         storedCurrentDay = clamped
         storedStreak = max(clamped - 1, 0)
         storedLastISO = ""
-        if clamped < 2 {
-            hasSetCarbTarget = false
-            storedCarbTarget = 0
-        }
     }
 
     private func resetProgress() {
@@ -132,8 +126,6 @@ struct SettingsView: View {
         storedStreak = 0
         storedLastISO = ""
         hasOnboarded = false
-        hasSetCarbTarget = false
-        storedCarbTarget = 0
         quizCorrectDaysStorage = "[]"
         selectedDay = 1
     }
