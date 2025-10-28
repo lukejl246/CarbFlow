@@ -1,0 +1,18 @@
+{
+  "configurations" : [
+    {
+      "id" : "AFF16102-357C-4A80-A224-3A8E37BA324A",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+
+  ],
+  "version" : 1
+}
