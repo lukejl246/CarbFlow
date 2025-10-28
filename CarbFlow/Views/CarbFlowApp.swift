@@ -10,6 +10,16 @@ import SwiftData
 
 @main
 struct CarbFlowApp: App {
+    init() {
+        FeatureFlags.configure()
+        #if DEBUG
+        print("[FeatureFlags] cf_food_local_store = \(FeatureFlags.foodLocalStoreEnabled)")
+        print("[FeatureFlags] cf_scan_enabled = \(FeatureFlags.scanEnabled)")
+        #endif
+        NonFatalReporter.configure()
+        scheduleFoodSeedInstall()
+    }
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -28,5 +38,27 @@ struct CarbFlowApp: App {
             AppRootView()
         }
         .modelContainer(sharedModelContainer)
+    }
+}
+
+private extension CarbFlowApp {
+    func scheduleFoodSeedInstall() {
+        guard CFFlags.isEnabled(.cf_fooddb) else {
+            #if DEBUG
+            print("[SeedInstaller] cf_fooddb disabled; skipping seed install.")
+            #endif
+            return
+        }
+
+        let seedVersion: Int64 = 1
+        Task.detached(priority: .background) {
+            cf_logEvent("seed_install_start", ["version": seedVersion])
+            let context = await MainActor.run { CFPersistence.shared.newBackgroundContext() }
+            CFSeedInstaller.installIfNeeded(
+                seedResourceName: "foods_seed_v1",
+                seedVersion: seedVersion,
+                context: context
+            )
+        }
     }
 }

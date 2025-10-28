@@ -89,7 +89,7 @@ struct HelpCardView: View {
                 Link("Privacy Policy", destination: url)
                     .font(.subheadline.weight(.semibold))
                     .onTapGesture {
-                        cf_logEvent("help_privacy_tap", [:])
+                        cf_logEvent("help-privacy-tap", [:])
                     }
             }
         }
@@ -115,7 +115,7 @@ struct HelpCardView: View {
     }
 
     private func composeSupportEmail() {
-        cf_logEvent("help_email_tap", [:])
+        cf_logEvent("help-email-tap", [:])
         Links.openSupportMail { copySupportEmailToClipboard() }
     }
 

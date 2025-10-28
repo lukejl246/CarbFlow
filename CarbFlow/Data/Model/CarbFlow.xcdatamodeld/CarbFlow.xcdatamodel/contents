@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23233" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Food" representedClassName="Food" syncable="YES" codeGenerationType="class">
+        <attribute name="id" optional="NO" attributeType="UUID" indexed="YES"/>
+        <attribute name="name" optional="NO" attributeType="String" indexed="YES" collationType="localizedCaseInsensitive"/>
+        <attribute name="brand" optional="YES" attributeType="String" indexed="YES"/>
+        <attribute name="portionGram" optional="NO" attributeType="Double"/>
+        <attribute name="netCarbsPer100g" optional="NO" attributeType="Double"/>
+        <attribute name="proteinPer100g" optional="NO" attributeType="Double"/>
+        <attribute name="fatPer100g" optional="NO" attributeType="Double"/>
+        <attribute name="isVerified" optional="NO" attributeType="Boolean" defaultValueString="0"/>
+        <attribute name="createdAt" optional="NO" attributeType="Date"/>
+        <attribute name="updatedAt" optional="NO" attributeType="Date"/>
+    </entity>
+    <entity name="MetaSeed" representedClassName="MetaSeed" syncable="YES" codeGenerationType="class">
+        <attribute name="version" optional="NO" attributeType="Integer 64"/>
+        <attribute name="appliedAt" optional="NO" attributeType="Date"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="version"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <elements>
+        <element name="Food" positionX="-16" positionY="-16" width="128" height="210"/>
+        <element name="MetaSeed" positionX="208" positionY="-16" width="128" height="90"/>
+    </elements>
+</model>

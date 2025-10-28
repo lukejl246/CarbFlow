@@ -28,288 +28,95 @@ final class FeatureFlagStore: ObservableObject {
     @Published var challengeNoSugar7dEnabled: Bool
     @Published var fastingEnabled: Bool
 
-    init(flags: CFFeatureFlags) {
-        self.flags = flags
-        self.loggingEnabled = flags.isLoggingEnabled
-        self.recipesEnabled = flags.isRecipesEnabled
-        self.healthKitEnabled = flags.isHealthKitEnabled
-        self.wearablesEnabled = flags.isWearablesEnabled
-        self.ketonesEnabled = flags.isKetonesEnabled
-        self.dashboardSummaryEnabled = flags.isDashboardSummaryEnabled
-        self.dashboardTrendsEnabled = flags.isDashboardTrendsEnabled
-        self.dashboardStreaksEnabled = flags.isDashboardStreaksEnabled
-        self.dashboardMacrosEnabled = flags.isDashboardMacrosEnabled
-        self.dashboardHydrationEnabled = flags.isDashboardHydrationEnabled
-        self.dashboardSleepEnabled = flags.isDashboardSleepEnabled
-        self.dashboardReadinessEnabled = flags.isDashboardReadinessEnabled
-        self.coachEnabled = flags.isCoachEnabled
-        self.quizzesEnabled = flags.isQuizzesEnabled
-        self.quizBasicsEnabled = flags.isQuizBasicsEnabled
-        self.quizLabelsEnabled = flags.isQuizLabelsEnabled
-        self.quizElectrolytesEnabled = flags.isQuizElectrolytesEnabled
-        self.quizFasting101Enabled = flags.isQuizFasting101Enabled
-        self.programmeEnabled = flags.isProgrammeEnabled
-        self.challengesEnabled = flags.isChallengesEnabled
-        self.challengeElectrolytes7dEnabled = flags.isChallengeElectrolytes7dEnabled
-        self.challengeHydration7dEnabled = flags.isChallengeHydration7dEnabled
-        self.challengeSteps7dEnabled = flags.isChallengeSteps7dEnabled
-        self.challengeNoSugar7dEnabled = flags.isChallengeNoSugar7dEnabled
-        self.fastingEnabled = flags.isFastingEnabled
-    }
-
-    convenience init() {
-        self.init(flags: CFFeatureFlags.shared)
-    }
-
-    func setLogging(_ enabled: Bool) {
-        flags.set(.logging, enabled: enabled)
-        loggingEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "logging", "enabled": enabled])
-    }
-
-    func toggleLogging() {
-        setLogging(!loggingEnabled)
-    }
-
-    func setRecipes(_ enabled: Bool) {
-        flags.set(.recipes, enabled: enabled)
-        recipesEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "recipes", "enabled": enabled])
-    }
-
-    func toggleRecipes() {
-        setRecipes(!recipesEnabled)
-    }
-
-    func setHealthKit(_ enabled: Bool) {
-        flags.set(.healthKit, enabled: enabled)
-        healthKitEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "healthKit", "enabled": enabled])
-    }
-
-    func toggleHealthKit() {
-        setHealthKit(!healthKitEnabled)
-    }
-
-    func setWearables(_ enabled: Bool) {
-        flags.set(.wearables, enabled: enabled)
-        wearablesEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "wearables", "enabled": enabled])
-    }
-
-    func toggleWearables() {
-        setWearables(!wearablesEnabled)
-    }
-
-    func setKetones(_ enabled: Bool) {
-        flags.set(.ketones, enabled: enabled)
-        ketonesEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "ketones", "enabled": enabled])
-    }
-
-    func toggleKetones() {
-        setKetones(!ketonesEnabled)
-    }
-
-    func setDashboardSummary(_ enabled: Bool) {
-        flags.set(.dashboardSummary, enabled: enabled)
-        dashboardSummaryEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "dashboardSummary", "enabled": enabled])
-    }
-
-    func toggleDashboardSummary() {
-        setDashboardSummary(!dashboardSummaryEnabled)
-    }
-
-    func setDashboardTrends(_ enabled: Bool) {
-        flags.set(.dashboardTrends, enabled: enabled)
-        dashboardTrendsEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "dashboardTrends", "enabled": enabled])
-    }
-
-    func toggleDashboardTrends() {
-        setDashboardTrends(!dashboardTrendsEnabled)
-    }
-
-    func setDashboardStreaks(_ enabled: Bool) {
-        flags.set(.dashboardStreaks, enabled: enabled)
-        dashboardStreaksEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "dashboardStreaks", "enabled": enabled])
-    }
-
-    func toggleDashboardStreaks() {
-        setDashboardStreaks(!dashboardStreaksEnabled)
-    }
-
-    func setDashboardMacros(_ enabled: Bool) {
-        flags.set(.dashboardMacros, enabled: enabled)
-        dashboardMacrosEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "dashboardMacros", "enabled": enabled])
-    }
-
-    func toggleDashboardMacros() {
-        setDashboardMacros(!dashboardMacrosEnabled)
-    }
-
-    func setDashboardHydration(_ enabled: Bool) {
-        flags.set(.dashboardHydration, enabled: enabled)
-        dashboardHydrationEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "dashboardHydration", "enabled": enabled])
-    }
-
-    func toggleDashboardHydration() {
-        setDashboardHydration(!dashboardHydrationEnabled)
-    }
-
-    func setDashboardSleep(_ enabled: Bool) {
-        flags.set(.dashboardSleep, enabled: enabled)
-        dashboardSleepEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "dashboardSleep", "enabled": enabled])
-    }
-
-    func toggleDashboardSleep() {
-        setDashboardSleep(!dashboardSleepEnabled)
-    }
-
-    func setDashboardReadiness(_ enabled: Bool) {
-        flags.set(.dashboardReadiness, enabled: enabled)
-        dashboardReadinessEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "dashboardReadiness", "enabled": enabled])
-    }
-
-    func toggleDashboardReadiness() {
-        setDashboardReadiness(!dashboardReadinessEnabled)
-    }
-
-    func setCoach(_ enabled: Bool) {
-        flags.set(.coach, enabled: enabled)
-        coachEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "coach", "enabled": enabled])
-    }
-
-    func toggleCoach() {
-        setCoach(!coachEnabled)
-    }
-
-    func setQuizzes(_ enabled: Bool) {
-        flags.set(.quizzes, enabled: enabled)
-        quizzesEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "quizzes", "enabled": enabled])
-    }
-
-    func toggleQuizzes() {
-        setQuizzes(!quizzesEnabled)
-    }
-
-    func setQuizBasics(_ enabled: Bool) {
-        flags.set(.quizBasics, enabled: enabled)
-        quizBasicsEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "quizBasics", "enabled": enabled])
-    }
-
-    func toggleQuizBasics() {
-        setQuizBasics(!quizBasicsEnabled)
-    }
-
-    func setQuizLabels(_ enabled: Bool) {
-        flags.set(.quizLabels, enabled: enabled)
-        quizLabelsEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "quizLabels", "enabled": enabled])
-    }
-
-    func toggleQuizLabels() {
-        setQuizLabels(!quizLabelsEnabled)
-    }
-
-    func setQuizElectrolytes(_ enabled: Bool) {
-        flags.set(.quizElectrolytes, enabled: enabled)
-        quizElectrolytesEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "quizElectrolytes", "enabled": enabled])
-    }
-
-    func toggleQuizElectrolytes() {
-        setQuizElectrolytes(!quizElectrolytesEnabled)
-    }
-
-    func setQuizFasting101(_ enabled: Bool) {
-        flags.set(.quizFasting101, enabled: enabled)
-        quizFasting101Enabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "quizFasting101", "enabled": enabled])
-    }
-
-    func toggleQuizFasting101() {
-        setQuizFasting101(!quizFasting101Enabled)
-    }
-
-    func setProgramme(_ enabled: Bool) {
-        flags.set(.programme, enabled: enabled)
-        programmeEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "programme", "enabled": enabled])
-    }
-
-    func toggleProgramme() {
-        setProgramme(!programmeEnabled)
-    }
-
-    func setChallenges(_ enabled: Bool) {
-        flags.set(.challenges, enabled: enabled)
-        challengesEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "challenges", "enabled": enabled])
-    }
-
-    func toggleChallenges() {
-        setChallenges(!challengesEnabled)
-    }
-
-    func setChallengeElectrolytes7d(_ enabled: Bool) {
-        flags.set(.challengeElectrolytes7d, enabled: enabled)
-        challengeElectrolytes7dEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "challengeElectrolytes7d", "enabled": enabled])
-    }
-
-    func toggleChallengeElectrolytes7d() {
-        setChallengeElectrolytes7d(!challengeElectrolytes7dEnabled)
-    }
-
-    func setChallengeHydration7d(_ enabled: Bool) {
-        flags.set(.challengeHydration7d, enabled: enabled)
-        challengeHydration7dEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "challengeHydration7d", "enabled": enabled])
-    }
-
-    func toggleChallengeHydration7d() {
-        setChallengeHydration7d(!challengeHydration7dEnabled)
-    }
-
-    func setChallengeSteps7d(_ enabled: Bool) {
-        flags.set(.challengeSteps7d, enabled: enabled)
-        challengeSteps7dEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "challengeSteps7d", "enabled": enabled])
-    }
-
-    func toggleChallengeSteps7d() {
-        setChallengeSteps7d(!challengeSteps7dEnabled)
-    }
-
-    func setChallengeNoSugar7d(_ enabled: Bool) {
-        flags.set(.challengeNoSugar7d, enabled: enabled)
-        challengeNoSugar7dEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "challengeNoSugar7d", "enabled": enabled])
-    }
-
-    func toggleChallengeNoSugar7d() {
-        setChallengeNoSugar7d(!challengeNoSugar7dEnabled)
-    }
-
-    func setFasting(_ enabled: Bool) {
-        flags.set(.fasting, enabled: enabled)
-        fastingEnabled = enabled
-        cf_logEvent("feature_flag_toggled", ["flag": "fasting", "enabled": enabled])
-    }
-
-    func toggleFasting() {
-        setFasting(!fastingEnabled)
-    }
-
     private let flags: CFFeatureFlags
+
+    init(flags: CFFeatureFlags? = nil) {
+        let resolvedFlags = flags ?? CFFeatureFlags.shared
+        self.flags = resolvedFlags
+        self.loggingEnabled = resolvedFlags.isEnabled(.logging)
+        self.recipesEnabled = resolvedFlags.isEnabled(.recipes)
+        self.healthKitEnabled = resolvedFlags.isEnabled(.healthKit)
+        self.wearablesEnabled = resolvedFlags.isEnabled(.wearables)
+        self.ketonesEnabled = resolvedFlags.isEnabled(.ketones)
+        self.dashboardSummaryEnabled = resolvedFlags.isEnabled(.dashboardSummary)
+        self.dashboardTrendsEnabled = resolvedFlags.isEnabled(.dashboardTrends)
+        self.dashboardStreaksEnabled = resolvedFlags.isEnabled(.dashboardStreaks)
+        self.dashboardMacrosEnabled = resolvedFlags.isEnabled(.dashboardMacros)
+        self.dashboardHydrationEnabled = resolvedFlags.isEnabled(.dashboardHydration)
+        self.dashboardSleepEnabled = resolvedFlags.isEnabled(.dashboardSleep)
+        self.dashboardReadinessEnabled = resolvedFlags.isEnabled(.dashboardReadiness)
+        self.coachEnabled = resolvedFlags.isEnabled(.coach)
+        self.quizzesEnabled = resolvedFlags.isEnabled(.quizzes)
+        self.quizBasicsEnabled = resolvedFlags.isEnabled(.quizBasics)
+        self.quizLabelsEnabled = resolvedFlags.isEnabled(.quizLabels)
+        self.quizElectrolytesEnabled = resolvedFlags.isEnabled(.quizElectrolytes)
+        self.quizFasting101Enabled = resolvedFlags.isEnabled(.quizFasting101)
+        self.programmeEnabled = resolvedFlags.isEnabled(.programme)
+        self.challengesEnabled = resolvedFlags.isEnabled(.challenges)
+        self.challengeElectrolytes7dEnabled = resolvedFlags.isEnabled(.challengeElectrolytes7d)
+        self.challengeHydration7dEnabled = resolvedFlags.isEnabled(.challengeHydration7d)
+        self.challengeSteps7dEnabled = resolvedFlags.isEnabled(.challengeSteps7d)
+        self.challengeNoSugar7dEnabled = resolvedFlags.isEnabled(.challengeNoSugar7d)
+        self.fastingEnabled = resolvedFlags.isEnabled(.fasting)
+    }
+
+    func resetToDefaults() {
+        flags.resetToDefaults()
+        loggingEnabled = flags.isEnabled(.logging)
+        recipesEnabled = flags.isEnabled(.recipes)
+        healthKitEnabled = flags.isEnabled(.healthKit)
+        wearablesEnabled = flags.isEnabled(.wearables)
+        ketonesEnabled = flags.isEnabled(.ketones)
+        dashboardSummaryEnabled = flags.isEnabled(.dashboardSummary)
+        dashboardTrendsEnabled = flags.isEnabled(.dashboardTrends)
+        dashboardStreaksEnabled = flags.isEnabled(.dashboardStreaks)
+        dashboardMacrosEnabled = flags.isEnabled(.dashboardMacros)
+        dashboardHydrationEnabled = flags.isEnabled(.dashboardHydration)
+        dashboardSleepEnabled = flags.isEnabled(.dashboardSleep)
+        dashboardReadinessEnabled = flags.isEnabled(.dashboardReadiness)
+        coachEnabled = flags.isEnabled(.coach)
+        quizzesEnabled = flags.isEnabled(.quizzes)
+        quizBasicsEnabled = flags.isEnabled(.quizBasics)
+        quizLabelsEnabled = flags.isEnabled(.quizLabels)
+        quizElectrolytesEnabled = flags.isEnabled(.quizElectrolytes)
+        quizFasting101Enabled = flags.isEnabled(.quizFasting101)
+        programmeEnabled = flags.isEnabled(.programme)
+        challengesEnabled = flags.isEnabled(.challenges)
+        challengeElectrolytes7dEnabled = flags.isEnabled(.challengeElectrolytes7d)
+        challengeHydration7dEnabled = flags.isEnabled(.challengeHydration7d)
+        challengeSteps7dEnabled = flags.isEnabled(.challengeSteps7d)
+        challengeNoSugar7dEnabled = flags.isEnabled(.challengeNoSugar7d)
+        fastingEnabled = flags.isEnabled(.fasting)
+    }
+
+    func set(_ flag: FeatureFlag, enabled: Bool) {
+        flags.set(flag, enabled: enabled)
+        switch flag {
+        case .logging: loggingEnabled = enabled
+        case .recipes: recipesEnabled = enabled
+        case .healthKit: healthKitEnabled = enabled
+        case .wearables: wearablesEnabled = enabled
+        case .ketones: ketonesEnabled = enabled
+        case .dashboardSummary: dashboardSummaryEnabled = enabled
+        case .dashboardTrends: dashboardTrendsEnabled = enabled
+        case .dashboardStreaks: dashboardStreaksEnabled = enabled
+        case .dashboardMacros: dashboardMacrosEnabled = enabled
+        case .dashboardHydration: dashboardHydrationEnabled = enabled
+        case .dashboardSleep: dashboardSleepEnabled = enabled
+        case .dashboardReadiness: dashboardReadinessEnabled = enabled
+        case .coach: coachEnabled = enabled
+        case .quizzes: quizzesEnabled = enabled
+        case .quizBasics: quizBasicsEnabled = enabled
+        case .quizLabels: quizLabelsEnabled = enabled
+        case .quizElectrolytes: quizElectrolytesEnabled = enabled
+        case .quizFasting101: quizFasting101Enabled = enabled
+        case .programme: programmeEnabled = enabled
+        case .challenges: challengesEnabled = enabled
+        case .challengeElectrolytes7d: challengeElectrolytes7dEnabled = enabled
+        case .challengeHydration7d: challengeHydration7dEnabled = enabled
+        case .challengeSteps7d: challengeSteps7dEnabled = enabled
+        case .challengeNoSugar7d: challengeNoSugar7dEnabled = enabled
+        case .fasting: fastingEnabled = enabled
+        }
+    }
 }

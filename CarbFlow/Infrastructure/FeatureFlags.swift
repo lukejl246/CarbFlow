@@ -49,10 +49,10 @@ final class CFFeatureFlags {
     static let shared = CFFeatureFlags()
 
     private let defaults: UserDefaults
-    private let queue = DispatchQueue(label: "com.carbflow.infrastructure.featureflags")
     private var defaultValues: [FeatureFlag: Bool]
+    private let queue = DispatchQueue(label: "com.carbflow.infrastructure.featureflags")
 
-    init(defaults: UserDefaults = .standard) {
+    private init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         self.defaultValues = Self.defaultFlagValues
 
@@ -62,191 +62,154 @@ final class CFFeatureFlags {
         defaults.register(defaults: registeredDefaults)
     }
 
-    var isLoggingEnabled: Bool {
-        get { isEnabled(.logging) }
-        set { set(.logging, enabled: newValue) }
-    }
-
-    var isRecipesEnabled: Bool {
-        get { isEnabled(.recipes) }
-        set { set(.recipes, enabled: newValue) }
-    }
-
-    var isHealthKitEnabled: Bool {
-        get { isEnabled(.healthKit) }
-        set { set(.healthKit, enabled: newValue) }
-    }
-
-    var isWearablesEnabled: Bool {
-        get { isEnabled(.wearables) }
-        set { set(.wearables, enabled: newValue) }
-    }
-
-    var isKetonesEnabled: Bool {
-        get { isEnabled(.ketones) }
-        set { set(.ketones, enabled: newValue) }
-    }
-
-    var isDashboardSummaryEnabled: Bool {
-        get { isEnabled(.dashboardSummary) }
-        set { set(.dashboardSummary, enabled: newValue) }
-    }
-
-    var isDashboardTrendsEnabled: Bool {
-        get { isEnabled(.dashboardTrends) }
-        set { set(.dashboardTrends, enabled: newValue) }
-    }
-
-    var isDashboardStreaksEnabled: Bool {
-        get { isEnabled(.dashboardStreaks) }
-        set { set(.dashboardStreaks, enabled: newValue) }
-    }
-
-    var isDashboardMacrosEnabled: Bool {
-        get { isEnabled(.dashboardMacros) }
-        set { set(.dashboardMacros, enabled: newValue) }
-    }
-
-    var isDashboardHydrationEnabled: Bool {
-        get { isEnabled(.dashboardHydration) }
-        set { set(.dashboardHydration, enabled: newValue) }
-    }
-
-    var isDashboardSleepEnabled: Bool {
-        get { isEnabled(.dashboardSleep) }
-        set { set(.dashboardSleep, enabled: newValue) }
-    }
-
-    var isDashboardReadinessEnabled: Bool {
-        get { isEnabled(.dashboardReadiness) }
-        set { set(.dashboardReadiness, enabled: newValue) }
-    }
-
-    var isCoachEnabled: Bool {
-        get { isEnabled(.coach) }
-        set { set(.coach, enabled: newValue) }
-    }
-
-    var isQuizzesEnabled: Bool {
-        get { isEnabled(.quizzes) }
-        set { set(.quizzes, enabled: newValue) }
-    }
-
-    var isQuizBasicsEnabled: Bool {
-        get { isEnabled(.quizBasics) }
-        set { set(.quizBasics, enabled: newValue) }
-    }
-
-    var isQuizLabelsEnabled: Bool {
-        get { isEnabled(.quizLabels) }
-        set { set(.quizLabels, enabled: newValue) }
-    }
-
-    var isQuizElectrolytesEnabled: Bool {
-        get { isEnabled(.quizElectrolytes) }
-        set { set(.quizElectrolytes, enabled: newValue) }
-    }
-
-    var isQuizFasting101Enabled: Bool {
-        get { isEnabled(.quizFasting101) }
-        set { set(.quizFasting101, enabled: newValue) }
-    }
-
-    var isProgrammeEnabled: Bool {
-        get { isEnabled(.programme) }
-        set { set(.programme, enabled: newValue) }
-    }
-
-    var isChallengesEnabled: Bool {
-        get { isEnabled(.challenges) }
-        set { set(.challenges, enabled: newValue) }
-    }
-
-    var isChallengeElectrolytes7dEnabled: Bool {
-        get { isEnabled(.challengeElectrolytes7d) }
-        set { set(.challengeElectrolytes7d, enabled: newValue) }
-    }
-
-    var isChallengeHydration7dEnabled: Bool {
-        get { isEnabled(.challengeHydration7d) }
-        set { set(.challengeHydration7d, enabled: newValue) }
-    }
-
-    var isChallengeSteps7dEnabled: Bool {
-        get { isEnabled(.challengeSteps7d) }
-        set { set(.challengeSteps7d, enabled: newValue) }
-    }
-
-    var isChallengeNoSugar7dEnabled: Bool {
-        get { isEnabled(.challengeNoSugar7d) }
-        set { set(.challengeNoSugar7d, enabled: newValue) }
-    }
-
-    var isFastingEnabled: Bool {
-        get { isEnabled(.fasting) }
-        set { set(.fasting, enabled: newValue) }
-    }
-    func set(_ flag: FeatureFlag, enabled: Bool) {
-        queue.sync {
-            defaults.set(enabled, forKey: Self.storageKey(for: flag))
+    private static let defaultFlagValues: [FeatureFlag: Bool] = {
+        var values = FeatureFlag.allCases.reduce(into: [FeatureFlag: Bool]()) { result, flag in
+            result[flag] = false
         }
-    }
-
-    func isEnabled(_ flag: FeatureFlag) -> Bool {
-        queue.sync {
-            let key = Self.storageKey(for: flag)
-            if defaults.object(forKey: key) == nil {
-                return defaultValues[flag] ?? false
-            }
-            return defaults.bool(forKey: key)
-        }
-    }
-
-    func resetToDefaults() {
-        queue.sync {
-            for (flag, value) in defaultValues {
-                defaults.set(value, forKey: Self.storageKey(for: flag))
-            }
-            defaults.synchronize()
-        }
-    }
+        values[.logging] = true
+        return values
+    }()
 
     func registerDefault(_ value: Bool, for flag: FeatureFlag) {
         queue.sync {
             defaultValues[flag] = value
-            defaults.register(defaults: [Self.storageKey(for: flag): value])
         }
     }
 
-    private static let defaultFlagValues: [FeatureFlag: Bool] = [
-        .logging: true,
-        .recipes: false,
-        .healthKit: false,
-        .wearables: false,
-        .ketones: false,
-        .dashboardSummary: true,
-        .dashboardTrends: false,
-        .dashboardStreaks: false,
-        .dashboardMacros: false,
-        .dashboardHydration: false,
-        .dashboardSleep: false,
-        .dashboardReadiness: false,
-        .coach: false,
-        .quizzes: false,
-        .quizBasics: false,
-        .quizLabels: false,
-        .quizElectrolytes: false,
-        .quizFasting101: false,
-        .programme: false,
-        .challenges: false,
-        .challengeElectrolytes7d: false,
-        .challengeHydration7d: false,
-        .challengeSteps7d: false,
-        .challengeNoSugar7d: false,
-        .fasting: false
-    ]
+    func resetToDefaults() {
+        let values = queue.sync { defaultValues }
+        for (flag, value) in values {
+            set(flag, enabled: value)
+        }
+    }
+
+    func isEnabled(_ flag: FeatureFlag) -> Bool {
+        defaults.bool(forKey: Self.storageKey(for: flag))
+    }
+
+    func set(_ flag: FeatureFlag, enabled: Bool) {
+        defaults.set(enabled, forKey: Self.storageKey(for: flag))
+    }
 
     private static func storageKey(for flag: FeatureFlag) -> String {
-        "cf_flag_\(flag.rawValue)"
+        "cf_\(flag.rawValue)"
     }
 }
+
+enum FeatureFlags {
+    private enum Keys {
+        static let foodLocalStore = "cf_food_local_store"
+        static let scanEnabled = "cf_scan_enabled"
+    }
+
+    static let foodLocalStoreDidChange = Notification.Name("cf_food_local_store_did_change")
+    static let scanDidChange = Notification.Name("cf_scan_enabled_did_change")
+
+    static func configure() {
+        _ = CFFeatureFlags.shared
+        UserDefaults.standard.register(defaults: [
+            Keys.foodLocalStore: true,
+            Keys.scanEnabled: true
+        ])
+    }
+
+    static var foodLocalStoreEnabled: Bool {
+        UserDefaults.standard.bool(forKey: Keys.foodLocalStore)
+    }
+
+    static var scanEnabled: Bool {
+        UserDefaults.standard.bool(forKey: Keys.scanEnabled)
+    }
+
+    static func setFoodLocalStore(enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: Keys.foodLocalStore)
+        NotificationCenter.default.post(name: foodLocalStoreDidChange, object: nil)
+    }
+
+    static func setScanEnabled(_ enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: Keys.scanEnabled)
+        NotificationCenter.default.post(name: scanDidChange, object: nil)
+    }
+}
+
+// MARK: - CarbFlow-specific Flags
+
+enum CFFlag: String, CaseIterable {
+    case cf_fooddb
+}
+
+enum CFFlags {
+    private static let configuration: [String: Bool] = {
+        guard let url = locateConfigurationURL(),
+              let data = try? Data(contentsOf: url),
+              let plist = try? PropertyListSerialization.propertyList(from: data, format: nil),
+              let dictionary = plist as? [String: Any] else {
+            return [:]
+        }
+
+        return dictionary.reduce(into: [String: Bool]()) { partialResult, entry in
+            guard let value = entry.value as? Bool else { return }
+            partialResult[entry.key] = value
+        }
+    }()
+
+    static func isEnabled(_ flag: CFFlag) -> Bool {
+        #if DEBUG
+        if let override = override(for: flag) {
+            return override
+        }
+        #endif
+
+        if let value = configuration[flag.rawValue] {
+            return value
+        }
+
+        switch flag {
+        case .cf_fooddb:
+            return true
+        }
+    }
+
+    #if DEBUG
+    static func setOverride(_ flag: CFFlag, enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: overrideKey(for: flag))
+    }
+
+    static func clearOverride(_ flag: CFFlag) {
+        UserDefaults.standard.removeObject(forKey: overrideKey(for: flag))
+    }
+
+    static func override(for flag: CFFlag) -> Bool? {
+        UserDefaults.standard.object(forKey: overrideKey(for: flag)) as? Bool
+    }
+    #endif
+
+    private static func locateConfigurationURL() -> URL? {
+        let bundleCandidates: [Bundle] = [
+            .main,
+            Bundle(for: FeatureFlagBundleSentinel.self)
+        ]
+
+        for bundle in bundleCandidates {
+            if let url = bundle.url(forResource: "FeatureFlags", withExtension: "plist") {
+                return url
+            }
+            if let url = bundle.url(forResource: "FeatureFlags", withExtension: "plist", subdirectory: "Config") {
+                return url
+            }
+            if let url = bundle.url(forResource: "FeatureFlags", withExtension: "plist", subdirectory: "Resources/Config") {
+                return url
+            }
+        }
+
+        return nil
+    }
+
+    #if DEBUG
+    private static func overrideKey(for flag: CFFlag) -> String {
+        "cf_override_\(flag.rawValue)"
+    }
+    #endif
+}
+
+private final class FeatureFlagBundleSentinel {}

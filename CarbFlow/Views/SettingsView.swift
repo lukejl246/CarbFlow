@@ -16,6 +16,8 @@ struct SettingsView: View {
     @State private var whatsNewStore = WhatsNewStore()
     @State private var analyticsEnabled = AnalyticsRouter.enabled
     @State private var errorReportingEnabled = CFErrorReportingRouter.shared.enabled
+    @State private var foodLocalStoreEnabled = FeatureFlags.foodLocalStoreEnabled
+    @State private var foodDatabaseEnabled = CFFlags.isEnabled(.cf_fooddb)
 #endif
 
     private var totalDays: Int {
@@ -28,6 +30,11 @@ struct SettingsView: View {
                 Label("About", systemImage: "info.circle")
                 Label("Disclaimer", systemImage: "exclamationmark.triangle")
                 Label("Support", systemImage: "envelope")
+                NavigationLink {
+                    PrivacyView()
+                } label: {
+                    Label("Privacy", systemImage: "hand.raised")
+                }
                 NavigationLink {
                     HelpCardView()
                 } label: {
@@ -58,8 +65,13 @@ struct SettingsView: View {
                 errorReportingToggleCard
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
-#endif
-#if DEBUG
+                featureFlagToggle
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                foodDatabaseToggle
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+
                 Button("Show What's New") {
                     presentWhatsNew()
                 }
@@ -67,6 +79,12 @@ struct SettingsView: View {
 
                 NavigationLink("Feature Flags") {
                     DevFlagsView()
+                        .environmentObject(flagStore)
+                }
+                if CFFlags.isEnabled(.cf_fooddb) {
+                    NavigationLink("Food Seed Smoke Test") {
+                        SearchSeedSmokeTestView()
+                    }
                 }
 #endif
 
@@ -81,6 +99,7 @@ struct SettingsView: View {
             syncSelectedDay()
 #if DEBUG
             analyticsEnabled = AnalyticsRouter.enabled
+            foodDatabaseEnabled = CFFlags.isEnabled(.cf_fooddb)
 #endif
         }
         .onChange(of: storedCurrentDay) { _ in
@@ -93,6 +112,12 @@ struct SettingsView: View {
         .onChange(of: errorReportingEnabled) { _, newValue in
             CFErrorReportingRouter.shared.enabled = newValue
         }
+        .onChange(of: foodLocalStoreEnabled) { _, newValue in
+            FeatureFlags.setFoodLocalStore(enabled: newValue)
+        }
+        .onChange(of: foodDatabaseEnabled) { _, newValue in
+            CFFlags.setOverride(.cf_fooddb, enabled: newValue)
+        }
 #endif
         .alert("Reset Progress?", isPresented: $showResetAlert) {
             Button("Cancel", role: .cancel) { }
@@ -100,7 +125,7 @@ struct SettingsView: View {
                 resetProgress()
             }
         } message: {
-            Text("This clears streaks, completions, and carb target so you can restart.")
+            Text("This clears streaks and daily progress so you can restart.")
         }
 #if DEBUG
         .sheet(isPresented: $showWhatsNewSheet) {
@@ -155,6 +180,36 @@ struct SettingsView: View {
     private var errorReportingToggleCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             Toggle("Error reporting (console)", isOn: $errorReportingEnabled)
+                .tint(.accentColor)
+                .frame(minHeight: 44)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+        )
+    }
+
+    private var featureFlagToggle: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle("Local food store", isOn: $foodLocalStoreEnabled)
+                .tint(.accentColor)
+                .frame(minHeight: 44)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+        )
+    }
+
+    private var foodDatabaseToggle: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle("Food database + seeding", isOn: $foodDatabaseEnabled)
                 .tint(.accentColor)
                 .frame(minHeight: 44)
         }
