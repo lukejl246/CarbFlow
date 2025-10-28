@@ -11,7 +11,7 @@ protocol FoodRepositoryProtocol {
 final class FoodRepository: FoodRepositoryProtocol {
     private let persistence: CFPersistence
 
-    init(persistence: CFPersistence = .shared) {
+    init(persistence: CFPersistence) {
         self.persistence = persistence
     }
 

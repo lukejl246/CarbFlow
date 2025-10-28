@@ -13,7 +13,12 @@ struct SearchSeedSmokeTestView: View {
     @State private var infoMessage: String?
     @State private var isSeeding: Bool = false
 
-    private let repository = FoodRepository()
+    private let repository: FoodRepository
+
+    @MainActor
+    init(repository: FoodRepository) {
+        self.repository = repository
+    }
 
     var body: some View {
         Group {
@@ -86,8 +91,8 @@ struct SearchSeedSmokeTestView: View {
         .onChange(of: query) { _, newValue in
             scheduleSearch(for: newValue)
         }
-        .onAppear {
-            ensureSeedsAvailable()
+        .task {
+            await ensureSeedsAvailable()
             scheduleSearch(for: query)
         }
     }
@@ -171,30 +176,28 @@ struct SearchSeedSmokeTestView: View {
 }
 
 private extension SearchSeedSmokeTestView {
-    func ensureSeedsAvailable() {
-        Task {
-            guard CFFlags.isEnabled(.cf_fooddb) else { return }
+    func ensureSeedsAvailable() async {
+        guard CFFlags.isEnabled(.cf_fooddb) else { return }
 
-            do {
-                let count = try await repository.countAll()
-                guard count == 0 else { return }
+        do {
+            let count = try await repository.countAll()
+            guard count == 0 else { return }
 
-                await MainActor.run {
-                    isSeeding = true
-                    infoMessage = "Installing seed data…"
-                }
+            await MainActor.run {
+                isSeeding = true
+                infoMessage = "Installing seed data…"
+            }
 
-                await installSeeds()
+            await installSeeds()
 
-                await MainActor.run {
-                    isSeeding = false
-                    infoMessage = "Seed data ready. Try searching again."
-                }
-            } catch {
-                await MainActor.run {
-                    infoMessage = "Unable to verify seeds: \(error.localizedDescription)"
-                    isSeeding = false
-                }
+            await MainActor.run {
+                isSeeding = false
+                infoMessage = "Seed data ready. Try searching again."
+            }
+        } catch {
+            await MainActor.run {
+                infoMessage = "Unable to verify seeds: \(error.localizedDescription)"
+                isSeeding = false
             }
         }
     }
@@ -369,6 +372,15 @@ private struct FoodDisplayItem: Identifiable, Equatable {
         netCarbsPer100g = food.netCarbsPer100g
         proteinPer100g = food.proteinPer100g
         fatPer100g = food.fatPer100g
+    }
+}
+
+extension SearchSeedSmokeTestView {
+    @MainActor
+    static func makeDefault() -> SearchSeedSmokeTestView {
+        SearchSeedSmokeTestView(
+            repository: FoodRepository(persistence: CFPersistence.shared)
+        )
     }
 }
 

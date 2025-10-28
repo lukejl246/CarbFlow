@@ -86,7 +86,7 @@ final class HealthKitManager {
 
     func reportQueryFailure(query: String, sampleTypeIdentifier: String, error: Error) {
         let nsError = error as NSError
-        var context: [String: Any] = [
+        let context: [String: Any] = [
             "query": query,
             "sample_type": sampleTypeIdentifier
         ]

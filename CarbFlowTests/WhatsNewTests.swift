@@ -1,6 +1,7 @@
 import XCTest
 @testable import CarbFlow
 
+@MainActor
 final class WhatsNewTests: XCTestCase {
     private let suiteName = "cf_test_suite_whatsnew"
     private var userDefaults: UserDefaults!

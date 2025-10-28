@@ -6,14 +6,35 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6EF7B75A2EB0EDE10091D047 /* CarbFlowTests.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 6EF7B7592EB0EDE10091D047 /* CarbFlowTests.xctestplan */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6EF7B77D2EB0EEC40091D047 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6E07C2652EA43A9400AB2D18 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6E07C26C2EA43A9400AB2D18;
+			remoteInfo = CarbFlow;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		6E07C26D2EA43A9400AB2D18 /* CarbFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarbFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6EF7B7592EB0EDE10091D047 /* CarbFlowTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CarbFlowTests.xctestplan; sourceTree = "<group>"; };
+		6EF7B7792EB0EEC40091D047 /* CarbFlowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarbFlowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		6E07C26F2EA43A9400AB2D18 /* CarbFlow */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = CarbFlow;
+			sourceTree = "<group>";
+		};
+		6EF7B77A2EB0EEC40091D047 /* CarbFlowTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CarbFlowTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -26,13 +47,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6EF7B7762EB0EEC40091D047 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		6E07C2642EA43A9400AB2D18 = {
 			isa = PBXGroup;
 			children = (
+				6EF7B7592EB0EDE10091D047 /* CarbFlowTests.xctestplan */,
 				6E07C26F2EA43A9400AB2D18 /* CarbFlow */,
+				6EF7B77A2EB0EEC40091D047 /* CarbFlowTests */,
 				6E07C26E2EA43A9400AB2D18 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				6E07C26D2EA43A9400AB2D18 /* CarbFlow.app */,
+				6EF7B7792EB0EEC40091D047 /* CarbFlowTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,6 +101,29 @@
 			productReference = 6E07C26D2EA43A9400AB2D18 /* CarbFlow.app */;
 			productType = "com.apple.product-type.application";
 		};
+		6EF7B7782EB0EEC40091D047 /* CarbFlowTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6EF7B77F2EB0EEC40091D047 /* Build configuration list for PBXNativeTarget "CarbFlowTests" */;
+			buildPhases = (
+				6EF7B7752EB0EEC40091D047 /* Sources */,
+				6EF7B7762EB0EEC40091D047 /* Frameworks */,
+				6EF7B7772EB0EEC40091D047 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6EF7B77E2EB0EEC40091D047 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				6EF7B77A2EB0EEC40091D047 /* CarbFlowTests */,
+			);
+			name = CarbFlowTests;
+			packageProductDependencies = (
+			);
+			productName = CarbFlowTests;
+			productReference = 6EF7B7792EB0EEC40091D047 /* CarbFlowTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -82,6 +136,10 @@
 				TargetAttributes = {
 					6E07C26C2EA43A9400AB2D18 = {
 						CreatedOnToolsVersion = 26.0.1;
+					};
+					6EF7B7782EB0EEC40091D047 = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = 6E07C26C2EA43A9400AB2D18;
 					};
 				};
 			};
@@ -100,12 +158,21 @@
 			projectRoot = "";
 			targets = (
 				6E07C26C2EA43A9400AB2D18 /* CarbFlow */,
+				6EF7B7782EB0EEC40091D047 /* CarbFlowTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		6E07C26B2EA43A9400AB2D18 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6EF7B75A2EB0EDE10091D047 /* CarbFlowTests.xctestplan in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6EF7B7772EB0EEC40091D047 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +189,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6EF7B7752EB0EEC40091D047 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6EF7B77E2EB0EEC40091D047 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6E07C26C2EA43A9400AB2D18 /* CarbFlow */;
+			targetProxy = 6EF7B77D2EB0EEC40091D047 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		6E07C2782EA43A9600AB2D18 /* Debug */ = {
@@ -312,6 +394,48 @@
 			};
 			name = Release;
 		};
+		6EF7B7802EB0EEC40091D047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 47XH73RK2X;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.CarbFlowTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarbFlow.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarbFlow";
+			};
+			name = Debug;
+		};
+		6EF7B7812EB0EEC40091D047 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 47XH73RK2X;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.CarbFlowTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarbFlow.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarbFlow";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -329,6 +453,15 @@
 			buildConfigurations = (
 				6E07C27B2EA43A9600AB2D18 /* Debug */,
 				6E07C27C2EA43A9600AB2D18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6EF7B77F2EB0EEC40091D047 /* Build configuration list for PBXNativeTarget "CarbFlowTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6EF7B7802EB0EEC40091D047 /* Debug */,
+				6EF7B7812EB0EEC40091D047 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,6 +1,7 @@
 import XCTest
 @testable import CarbFlow
 
+@MainActor
 final class FastingLogicTests: XCTestCase {
     func testComputeNewStreakSameDayDoesNotChange() {
         let calendar = Calendar(identifier: .gregorian)

@@ -18,6 +18,8 @@ struct SettingsView: View {
     @State private var errorReportingEnabled = CFErrorReportingRouter.shared.enabled
     @State private var foodLocalStoreEnabled = FeatureFlags.foodLocalStoreEnabled
     @State private var foodDatabaseEnabled = CFFlags.isEnabled(.cf_fooddb)
+    @State private var airplaneModeEnabled = CFDebugNetwork.isAirplaneModeEnabled
+    @State private var predictiveSearchEnabled = CFFlags.isEnabled(.cf_foodsearch)
 #endif
 
     private var totalDays: Int {
@@ -71,6 +73,14 @@ struct SettingsView: View {
                 foodDatabaseToggle
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
+                #if targetEnvironment(simulator)
+                airplaneModeToggle
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                #endif
+                predictiveSearchToggle
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
 
                 Button("Show What's New") {
                     presentWhatsNew()
@@ -83,7 +93,7 @@ struct SettingsView: View {
                 }
                 if CFFlags.isEnabled(.cf_fooddb) {
                     NavigationLink("Food Seed Smoke Test") {
-                        SearchSeedSmokeTestView()
+                        SearchSeedSmokeTestViewContainer()
                     }
                 }
 #endif
@@ -100,9 +110,13 @@ struct SettingsView: View {
 #if DEBUG
             analyticsEnabled = AnalyticsRouter.enabled
             foodDatabaseEnabled = CFFlags.isEnabled(.cf_fooddb)
+            #if targetEnvironment(simulator)
+            airplaneModeEnabled = CFDebugNetwork.isAirplaneModeEnabled
+            #endif
+            predictiveSearchEnabled = CFFlags.isEnabled(.cf_foodsearch)
 #endif
         }
-        .onChange(of: storedCurrentDay) { _ in
+        .onChange(of: storedCurrentDay) { _, _ in
             syncSelectedDay()
         }
 #if DEBUG
@@ -117,6 +131,15 @@ struct SettingsView: View {
         }
         .onChange(of: foodDatabaseEnabled) { _, newValue in
             CFFlags.setOverride(.cf_fooddb, enabled: newValue)
+        }
+        #if targetEnvironment(simulator)
+        .onChange(of: airplaneModeEnabled) { _, newValue in
+            CFDebugNetwork.setAirplaneModeEnabled(newValue)
+        }
+        #endif
+        .onChange(of: predictiveSearchEnabled) { _, newValue in
+            CFFlags.setOverride(.cf_foodsearch, enabled: newValue)
+            cf_logEvent("FoodSearchFlagToggled", ["enabled": newValue])
         }
 #endif
         .alert("Reset Progress?", isPresented: $showResetAlert) {
@@ -220,6 +243,51 @@ struct SettingsView: View {
                 .fill(Color.white)
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
+    }
+
+    #if targetEnvironment(simulator)
+    private var airplaneModeToggle: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle("Simulate airplane mode", isOn: $airplaneModeEnabled)
+                .tint(.accentColor)
+                .frame(minHeight: 44)
+            Text("Disable simulated network connectivity while running in the simulator.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+        )
+    }
+    #endif
+
+    private var predictiveSearchToggle: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle("Predictive food search", isOn: $predictiveSearchEnabled)
+                .tint(.accentColor)
+                .frame(minHeight: 44)
+            Text("Toggle between predictive and basic prefix search to compare behaviour.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+        )
+    }
+
+    @MainActor
+    private struct SearchSeedSmokeTestViewContainer: View {
+        var body: some View {
+            SearchSeedSmokeTestView.makeDefault()
+        }
     }
 #endif
 }

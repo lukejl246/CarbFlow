@@ -1,6 +1,7 @@
 import XCTest
 @testable import CarbFlow
 
+@MainActor
 final class AnalyticsTests: XCTestCase {
     private var originalDestination: AnalyticsDestination?
     private var originalEnabled: Bool = true

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import CoreData
 
 @main
 struct CarbFlowApp: App {
@@ -51,9 +52,11 @@ private extension CarbFlowApp {
         }
 
         let seedVersion: Int64 = 1
-        Task.detached(priority: .background) {
-            cf_logEvent("seed_install_start", ["version": seedVersion])
-            let context = await MainActor.run { CFPersistence.shared.newBackgroundContext() }
+        Task {
+            let context = await MainActor.run { () -> NSManagedObjectContext in
+                cf_logEvent("seed_install_start", ["version": seedVersion])
+                return CFPersistence.shared.newBackgroundContext()
+            }
             CFSeedInstaller.installIfNeeded(
                 seedResourceName: "foods_seed_v1",
                 seedVersion: seedVersion,

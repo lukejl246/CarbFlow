@@ -20,8 +20,7 @@ struct VerifiedBadge: View {
     }
 }
 
-#Preview {
+#Preview(traits: .sizeThatFitsLayout) {
     VerifiedBadge()
         .padding()
-        .previewLayout(.sizeThatFits)
 }

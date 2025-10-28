@@ -112,6 +112,7 @@ private extension CFSeedInstaller {
         }
 
         var dictionariesForInsert: [[String: Any]] = []
+        var recordsForInsert: [SeedFoodRecord] = []
         var seen: Set<UUID> = []
         var inserted = 0
         var updated = 0
@@ -123,21 +124,37 @@ private extension CFSeedInstaller {
                 updated += 1
             } else {
                 dictionariesForInsert.append(record.makeInsertDictionary(timestamp: timestamp))
+                recordsForInsert.append(record)
             }
         }
 
         if !dictionariesForInsert.isEmpty {
-            let request = NSBatchInsertRequest(entityName: "Food", objects: dictionariesForInsert)
-            request.resultType = .objectIDs
-            let result = try context.execute(request) as? NSBatchInsertResult
-            if let objectIDs = result?.result as? [NSManagedObjectID], !objectIDs.isEmpty {
-                let changes = [NSInsertedObjectsKey: objectIDs]
-                NSManagedObjectContext.mergeChanges(
-                    fromRemoteContextSave: changes,
-                    into: [context]
-                )
+            let supportsBatchInsert = context.persistentStoreCoordinator?.persistentStores.allSatisfy { store in
+                store.type == NSSQLiteStoreType
+            } ?? false
+
+            if supportsBatchInsert {
+                let request = NSBatchInsertRequest(entityName: "Food", objects: dictionariesForInsert)
+                request.resultType = .objectIDs
+                let result = try context.execute(request) as? NSBatchInsertResult
+                if let objectIDs = result?.result as? [NSManagedObjectID], !objectIDs.isEmpty {
+                    let changes = [NSInsertedObjectsKey: objectIDs]
+                    NSManagedObjectContext.mergeChanges(
+                        fromRemoteContextSave: changes,
+                        into: [context]
+                    )
+                }
+                inserted = dictionariesForInsert.count
+            } else {
+                for record in recordsForInsert {
+                    let food = Food(context: context)
+                    food.id = record.id
+                    food.createdAt = timestamp
+                    apply(record: record, to: food, timestamp: timestamp)
+                    food.updatedAt = timestamp
+                    inserted += 1
+                }
             }
-            inserted = dictionariesForInsert.count
         }
 
         return (inserted, updated)

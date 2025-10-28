@@ -1,21 +1,21 @@
 import XCTest
+import CoreData
 @testable import CarbFlow
 
+@MainActor
 final class FoodDatabaseSeedTests: XCTestCase {
     private var repository: FoodRepository!
+    private var persistence: CFPersistence!
 
     override func setUp() async throws {
         try await super.setUp()
-        await MainActor.run {
-            cf_resetStore()
-            repository = FoodRepository()
-        }
+        persistence = CFPersistence.makeInMemory()
+        repository = FoodRepository(persistence: persistence)
     }
 
     override func tearDown() async throws {
-        await MainActor.run {
-            repository = nil
-        }
+        repository = nil
+        persistence = nil
         try await super.tearDown()
     }
 
@@ -49,7 +49,7 @@ final class FoodDatabaseSeedTests: XCTestCase {
     // MARK: Helpers
 
     private func installSeeds(version: Int64) async {
-        let context = await MainActor.run { CFPersistence.shared.newBackgroundContext() }
+        let context = persistence.newBackgroundContext()
         CFSeedInstaller.installIfNeeded(
             seedResourceName: "foods_seed_v1",
             seedVersion: version,

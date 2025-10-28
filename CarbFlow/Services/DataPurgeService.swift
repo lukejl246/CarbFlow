@@ -7,10 +7,14 @@ final class DataPurgeService {
     private let userDefaults: UserDefaults
 
     init(
-        persistence: PersistenceController = .shared,
+        persistence: PersistenceController? = nil,
         userDefaults: UserDefaults = .standard
     ) {
-        self.persistence = persistence
+        if let persistence {
+            self.persistence = persistence
+        } else {
+            self.persistence = PersistenceController.shared
+        }
         self.userDefaults = userDefaults
     }
 

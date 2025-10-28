@@ -7,10 +7,14 @@ final class DataExportService {
     private let userDefaults: UserDefaults
 
     init(
-        context: NSManagedObjectContext = PersistenceController.shared.container.viewContext,
+        context: NSManagedObjectContext? = nil,
         userDefaults: UserDefaults = .standard
     ) {
-        self.context = context
+        if let context {
+            self.context = context
+        } else {
+            self.context = PersistenceController.shared.container.viewContext
+        }
         self.userDefaults = userDefaults
     }
 

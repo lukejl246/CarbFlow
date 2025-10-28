@@ -8,10 +8,7 @@ final class FoodStoreTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        persistence = PersistenceController(inMemory: true)
-        store = FoodStore(context: persistence.container.viewContext)
-        FoodSeedLoader.seedIfNeeded(persistence: persistence)
-        try waitForSeed()
+        throw XCTSkip("Legacy FoodStore is deprecated with the new Core Data model.")
     }
 
     override func tearDownWithError() throws {

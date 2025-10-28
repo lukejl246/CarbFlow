@@ -136,6 +136,7 @@ enum FeatureFlags {
 
 enum CFFlag: String, CaseIterable {
     case cf_fooddb
+    case cf_foodsearch
 }
 
 enum CFFlags {
@@ -166,6 +167,8 @@ enum CFFlags {
 
         switch flag {
         case .cf_fooddb:
+            return true
+        case .cf_foodsearch:
             return true
         }
     }

@@ -14,6 +14,11 @@ final class CFPersistence {
         configure(context: container.viewContext, name: "viewContext")
     }
 
+    private init(container: NSPersistentContainer) {
+        self.container = container
+        configure(context: container.viewContext, name: "viewContext")
+    }
+
     var viewContext: NSManagedObjectContext {
         container.viewContext
     }
@@ -37,6 +42,17 @@ final class CFPersistence {
         description.type = NSSQLiteStoreType
         description.shouldMigrateStoreAutomatically = true
         description.shouldInferMappingModelAutomatically = true
+
+        if description.url == nil {
+            let fileManager = FileManager.default
+            if let applicationSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+                let directory = applicationSupport.appendingPathComponent("CarbFlow", isDirectory: true)
+                if !fileManager.fileExists(atPath: directory.path) {
+                    try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+                }
+                description.url = directory.appendingPathComponent("CarbFlow.sqlite")
+            }
+        }
     }
 
     fileprivate func loadPersistentStores() {
@@ -108,6 +124,27 @@ private extension CFPersistence {
     func reloadPersistentStoresForDebug() {
         loadPersistentStores()
         configure(context: container.viewContext, name: "viewContext")
+    }
+
+    static func makeInMemoryContainer() -> NSPersistentContainer {
+        let container = NSPersistentContainer(name: "CarbFlow")
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        container.persistentStoreDescriptions = [description]
+        container.loadPersistentStores { _, error in
+            if let error {
+                assertionFailure("Failed to load in-memory store: \(error)")
+            }
+        }
+        return container
+    }
+}
+
+extension CFPersistence {
+    @MainActor
+    static func makeInMemory() -> CFPersistence {
+        let container = makeInMemoryContainer()
+        return CFPersistence(container: container)
     }
 }
 #endif
