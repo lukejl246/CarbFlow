@@ -20,6 +20,7 @@ struct SettingsView: View {
     @State private var foodDatabaseEnabled = CFFlags.isEnabled(.cf_fooddb)
     @State private var airplaneModeEnabled = CFDebugNetwork.isAirplaneModeEnabled
     @State private var predictiveSearchEnabled = CFFlags.isEnabled(.cf_foodsearch)
+    @State private var customFoodEnabled = CFFlags.isEnabled(.cf_foodcustom)
 #endif
 
     private var totalDays: Int {
@@ -81,6 +82,9 @@ struct SettingsView: View {
                 predictiveSearchToggle
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
+                customFoodToggle
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
 
                 Button("Show What's New") {
                     presentWhatsNew()
@@ -114,6 +118,7 @@ struct SettingsView: View {
             airplaneModeEnabled = CFDebugNetwork.isAirplaneModeEnabled
             #endif
             predictiveSearchEnabled = CFFlags.isEnabled(.cf_foodsearch)
+            customFoodEnabled = CFFlags.isEnabled(.cf_foodcustom)
 #endif
         }
         .onChange(of: storedCurrentDay) { _, _ in
@@ -138,9 +143,13 @@ struct SettingsView: View {
         }
         #endif
         .onChange(of: predictiveSearchEnabled) { _, newValue in
-            CFFlags.setOverride(.cf_foodsearch, enabled: newValue)
-            cf_logEvent("FoodSearchFlagToggled", ["enabled": newValue])
-        }
+        CFFlags.setOverride(.cf_foodsearch, enabled: newValue)
+        cf_logEvent("FoodSearchFlagToggled", ["enabled": newValue])
+    }
+    .onChange(of: customFoodEnabled) { _, newValue in
+        CFFlags.setOverride(.cf_foodcustom, enabled: newValue)
+        cf_logEvent("FoodCustomFlagToggled", ["enabled": newValue])
+    }
 #endif
         .alert("Reset Progress?", isPresented: $showResetAlert) {
             Button("Cancel", role: .cancel) { }
@@ -195,7 +204,7 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
     }
@@ -210,7 +219,7 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
     }
@@ -225,7 +234,7 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
     }
@@ -240,7 +249,7 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
     }
@@ -259,7 +268,7 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
     }
@@ -278,7 +287,25 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
+                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+        )
+    }
+
+    private var customFoodToggle: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle("Custom foods (experimental)", isOn: $customFoodEnabled)
+                .tint(.accentColor)
+                .frame(minHeight: 44)
+            Text("Shows the add/edit custom food flow in search. Disable to simulate rollout off.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
     }

@@ -80,7 +80,9 @@ private extension FoodRepository {
 
     static func makePrefixPredicate(for prefix: String) -> NSPredicate {
         let format = "(name BEGINSWITH[cd] %@) OR (brand BEGINSWITH[cd] %@)"
-        return NSPredicate(format: format, prefix, prefix)
+        let base = NSPredicate(format: format, prefix, prefix)
+        let notDeleted = NSPredicate(format: "isSoftDeleted == NO")
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [notDeleted, base])
     }
 
     static let sortDescriptors: [NSSortDescriptor] = [

@@ -129,7 +129,7 @@ struct PrivacyView: View {
         .padding(24)
         .background(
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 18, y: 8)
         )
     }

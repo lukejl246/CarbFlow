@@ -12,6 +12,7 @@ struct LogView: View {
     @State private var searchInitialQuery = ""
     @State private var showCustomEditor = false
     @State private var customInitialName = ""
+    @State private var customInitialBarcode = ""
     @State private var customFoodFeatureEnabled = CFFlags.isEnabled(.cf_foodcustom)
     @State private var hasLoggedAppear = false
 
@@ -81,12 +82,14 @@ struct LogView: View {
         }
         .sheet(isPresented: $showCustomEditor, onDismiss: {
             customInitialName = ""
+            customInitialBarcode = ""
         }) {
             NavigationStack {
                 CustomFoodEditorView(
                     mode: .create,
                     repository: userRepository,
                     initialName: customInitialName,
+                    initialBarcode: customInitialBarcode,
                     onSaved: { food in
                         handleFoodSelection(food)
                     }
@@ -119,6 +122,7 @@ struct LogView: View {
                         viewModel.trackCreateCustom(for: code)
                         guard customFoodFeatureEnabled else { return }
                         customInitialName = ""
+                        customInitialBarcode = code
                         showCustomEditor = true
                     },
                     onDismiss: {
@@ -196,7 +200,7 @@ struct LogView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(Color.white)
+                    .fill(Color(.systemBackground))
             )
             .shadow(color: Color.black.opacity(0.08), radius: 16, y: 8)
         }
@@ -243,7 +247,7 @@ struct LogView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(Color.white)
+                    .fill(Color(.systemBackground))
             )
             .shadow(color: Color.black.opacity(0.08), radius: 16, y: 8)
         }

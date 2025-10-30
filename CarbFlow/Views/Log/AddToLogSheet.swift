@@ -60,7 +60,7 @@ struct AddToLogSheet: View {
                     .padding(20)
                     .background(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(Color.white)
+                            .fill(Color(.systemBackground))
                             .shadow(color: Color.black.opacity(0.08), radius: 14, y: 6)
                     )
 
@@ -74,7 +74,7 @@ struct AddToLogSheet: View {
                     .padding(20)
                     .background(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(Color.white)
+                            .fill(Color(.systemBackground))
                             .shadow(color: Color.black.opacity(0.08), radius: 14, y: 6)
                     )
                 }

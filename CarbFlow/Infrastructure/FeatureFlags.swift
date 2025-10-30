@@ -100,16 +100,22 @@ enum FeatureFlags {
     private enum Keys {
         static let foodLocalStore = "cf_food_local_store"
         static let scanEnabled = "cf_scan_enabled"
+        static let foodCustom = "cf_foodcustom"
+        static let scanCache = "cf_scancache"
     }
 
     static let foodLocalStoreDidChange = Notification.Name("cf_food_local_store_did_change")
     static let scanDidChange = Notification.Name("cf_scan_enabled_did_change")
+    static let foodCustomDidChange = Notification.Name("cf_foodcustom_did_change")
+    static let scanCacheDidChange = Notification.Name("cf_scancache_did_change")
 
     static func configure() {
         _ = CFFeatureFlags.shared
         UserDefaults.standard.register(defaults: [
             Keys.foodLocalStore: true,
-            Keys.scanEnabled: true
+            Keys.scanEnabled: true,
+            Keys.foodCustom: true,
+            Keys.scanCache: false
         ])
     }
 
@@ -121,6 +127,14 @@ enum FeatureFlags {
         UserDefaults.standard.bool(forKey: Keys.scanEnabled)
     }
 
+    static var foodCustomEnabled: Bool {
+        UserDefaults.standard.bool(forKey: Keys.foodCustom)
+    }
+
+    static var cf_scancache: Bool {
+        UserDefaults.standard.bool(forKey: Keys.scanCache)
+    }
+
     static func setFoodLocalStore(enabled: Bool) {
         UserDefaults.standard.set(enabled, forKey: Keys.foodLocalStore)
         NotificationCenter.default.post(name: foodLocalStoreDidChange, object: nil)
@@ -130,6 +144,16 @@ enum FeatureFlags {
         UserDefaults.standard.set(enabled, forKey: Keys.scanEnabled)
         NotificationCenter.default.post(name: scanDidChange, object: nil)
     }
+
+    static func setFoodCustomEnabled(_ enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: Keys.foodCustom)
+        NotificationCenter.default.post(name: foodCustomDidChange, object: nil)
+    }
+
+    static func setScanCacheEnabled(_ enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: Keys.scanCache)
+        NotificationCenter.default.post(name: scanCacheDidChange, object: nil)
+    }
 }
 
 // MARK: - CarbFlow-specific Flags
@@ -137,6 +161,7 @@ enum FeatureFlags {
 enum CFFlag: String, CaseIterable {
     case cf_fooddb
     case cf_foodsearch
+    case cf_foodcustom
 }
 
 enum CFFlags {
@@ -170,20 +195,33 @@ enum CFFlags {
             return true
         case .cf_foodsearch:
             return true
+        case .cf_foodcustom:
+            return true
         }
     }
 
     #if DEBUG
     static func setOverride(_ flag: CFFlag, enabled: Bool) {
         UserDefaults.standard.set(enabled, forKey: overrideKey(for: flag))
+        notifyChange(for: flag)
     }
 
     static func clearOverride(_ flag: CFFlag) {
         UserDefaults.standard.removeObject(forKey: overrideKey(for: flag))
+        notifyChange(for: flag)
     }
 
     static func override(for flag: CFFlag) -> Bool? {
         UserDefaults.standard.object(forKey: overrideKey(for: flag)) as? Bool
+    }
+
+    private static func notifyChange(for flag: CFFlag) {
+        switch flag {
+        case .cf_foodcustom:
+            NotificationCenter.default.post(name: .cfFoodCustomFlagDidChange, object: nil)
+        case .cf_fooddb, .cf_foodsearch:
+            break
+        }
     }
     #endif
 
@@ -216,3 +254,7 @@ enum CFFlags {
 }
 
 private final class FeatureFlagBundleSentinel {}
+
+extension Notification.Name {
+    static let cfFoodCustomFlagDidChange = Notification.Name("cf_foodcustom_flag_did_change")
+}

@@ -16,14 +16,10 @@ struct ScanSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                BarcodeScannerView(
+                ScannerCameraView(
                     onCodeDetected: { code in
                         onScanned(code)
                         closeSheet()
-                    },
-                    onError: { error in
-                        errorMessage = error.localizedDescription
-                        showingError = true
                     }
                 )
                 .opacity(showPermissionCard ? 0.1 : 1.0)
@@ -119,7 +115,7 @@ struct ScanSheet: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.12), radius: 20, y: 10)
         )
         .accessibilityElement(children: .contain)

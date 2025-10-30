@@ -12,7 +12,13 @@
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [
-
+    {
+      "target" : {
+        "containerPath" : "container:CarbFlow.xcodeproj",
+        "identifier" : "6EF7B7782EB0EEC40091D047",
+        "name" : "CarbFlowTests"
+      }
+    }
   ],
   "version" : 1
 }

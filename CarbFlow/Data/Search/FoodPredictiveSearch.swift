@@ -87,12 +87,14 @@ final class CFPredictiveSearch {
 
 private extension CFPredictiveSearch {
     static func makePredicate(for query: String) -> NSPredicate {
-        NSCompoundPredicate(orPredicateWithSubpredicates: [
+        let nameOrBrand = NSCompoundPredicate(orPredicateWithSubpredicates: [
             NSPredicate(format: "name BEGINSWITH[cd] %@", query),
             NSPredicate(format: "brand BEGINSWITH[cd] %@", query),
             NSPredicate(format: "name CONTAINS[cd] %@", query),
             NSPredicate(format: "brand CONTAINS[cd] %@", query)
         ])
+        let notDeleted = NSPredicate(format: "isSoftDeleted == NO")
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [notDeleted, nameOrBrand])
     }
 
     static func matchScore(for query: String, name: String, brand: String?) -> Double {

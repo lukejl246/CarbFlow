@@ -23,7 +23,7 @@ struct FoodLibraryHelpCard: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
         .overlay(alignment: .topTrailing) {

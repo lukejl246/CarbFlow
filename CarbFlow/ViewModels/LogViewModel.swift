@@ -61,7 +61,26 @@ final class LogViewModel: ObservableObject {
     func addToLog(food: FoodItem, servings: Double) {
         let clampedServings = max(0.1, servings)
         let context = persistence.container.viewContext
-        _ = LogEntry(context: context, food: food, servings: clampedServings, date: Date())
+
+        // Ensure the food item is in the same context as the log entry
+        let foodInContext: FoodItem
+        if food.managedObjectContext == context {
+            foodInContext = food
+        } else {
+            // Get the food item in the view context
+            guard let fetchedFood = try? context.existingObject(with: food.objectID) as? FoodItem else {
+                cf_reportError(
+                    message: "log_entry_food_not_found",
+                    code: nil,
+                    context: ["foodID": food.objectID.uriRepresentation().absoluteString]
+                )
+                activePresentation = nil
+                return
+            }
+            foodInContext = fetchedFood
+        }
+
+        _ = LogEntry(context: context, food: foodInContext, servings: clampedServings, date: Date())
 
         do {
             try context.save()
@@ -72,13 +91,13 @@ final class LogViewModel: ObservableObject {
             cf_logEvent("scan-add-to-log", params)
             cf_breadcrumbAction("log_entry_saved", data: [
                 "servings": "\(clampedServings)",
-                "upc": food.upc ?? lastScannedCode ?? ""
+                "upc": foodInContext.upc ?? lastScannedCode ?? ""
             ])
         } catch {
             cf_reportError(
                 message: "log_entry_save_failed",
                 code: nil,
-                context: ["error": error.localizedDescription, "code": food.upc ?? ""]
+                context: ["error": error.localizedDescription, "code": foodInContext.upc ?? ""]
             )
         }
 

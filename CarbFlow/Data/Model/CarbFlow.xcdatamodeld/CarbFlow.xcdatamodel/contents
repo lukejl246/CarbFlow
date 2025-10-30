@@ -4,13 +4,62 @@
         <attribute name="id" optional="NO" attributeType="UUID" indexed="YES"/>
         <attribute name="name" optional="NO" attributeType="String" indexed="YES" collationType="localizedCaseInsensitive"/>
         <attribute name="brand" optional="YES" attributeType="String" indexed="YES"/>
+        <attribute name="slug" optional="YES" attributeType="String" indexed="YES"/>
         <attribute name="portionGram" optional="NO" attributeType="Double"/>
         <attribute name="netCarbsPer100g" optional="NO" attributeType="Double"/>
         <attribute name="proteinPer100g" optional="NO" attributeType="Double"/>
         <attribute name="fatPer100g" optional="NO" attributeType="Double"/>
         <attribute name="isVerified" optional="NO" attributeType="Boolean" defaultValueString="0"/>
+        <attribute name="isUserCreated" optional="NO" attributeType="Boolean" defaultValueString="0" indexed="YES"/>
+        <attribute name="source" optional="NO" attributeType="String" defaultValueString="seed"/>
+        <attribute name="servingSizeValue" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
+        <attribute name="servingSizeUnit" optional="YES" attributeType="String"/>
+        <attribute name="isSoftDeleted" optional="NO" attributeType="Boolean" defaultValueString="0" indexed="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="upc" optional="YES" attributeType="String"/>
+        <attribute name="createdBy" optional="YES" attributeType="String"/>
         <attribute name="createdAt" optional="NO" attributeType="Date"/>
         <attribute name="updatedAt" optional="NO" attributeType="Date"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="isUserCreated"/>
+                <constraint value="slug"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="FoodItem" representedClassName="FoodItem" syncable="YES">
+        <attribute name="id" optional="NO" attributeType="UUID" indexed="YES"/>
+        <attribute name="name" optional="NO" attributeType="String"/>
+        <attribute name="brand" optional="YES" attributeType="String"/>
+        <attribute name="servingSizeGrams" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
+        <attribute name="carbs" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="netCarbs" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="fat" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="protein" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="kcal" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="upc" optional="YES" attributeType="String"/>
+        <attribute name="isUserCreated" optional="NO" attributeType="Boolean" defaultValueString="0"/>
+        <attribute name="isVerified" optional="NO" attributeType="Boolean" defaultValueString="0"/>
+        <attribute name="internalReviewNote" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="NO" attributeType="Date"/>
+        <attribute name="updatedAt" optional="NO" attributeType="Date"/>
+    </entity>
+    <entity name="LogEntry" representedClassName="LogEntry" syncable="YES">
+        <attribute name="id" optional="NO" attributeType="UUID" indexed="YES"/>
+        <attribute name="createdAt" optional="NO" attributeType="Date"/>
+        <attribute name="updatedAt" optional="NO" attributeType="Date"/>
+        <attribute name="date" optional="NO" attributeType="Date" indexed="YES"/>
+        <attribute name="servings" optional="NO" attributeType="Double" defaultValueString="1.0"/>
+        <attribute name="foodName" optional="NO" attributeType="String"/>
+        <attribute name="brand" optional="YES" attributeType="String"/>
+        <attribute name="upc" optional="YES" attributeType="String"/>
+        <attribute name="carbs" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="netCarbs" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="fat" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="protein" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="kcal" optional="NO" attributeType="Double" defaultValueString="0.0"/>
+        <attribute name="servingSizeGrams" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
+        <relationship name="food" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="FoodItem"/>
     </entity>
     <entity name="MetaSeed" representedClassName="MetaSeed" syncable="YES" codeGenerationType="class">
         <attribute name="version" optional="NO" attributeType="Integer 64"/>
@@ -23,6 +72,8 @@
     </entity>
     <elements>
         <element name="Food" positionX="-16" positionY="-16" width="128" height="210"/>
+        <element name="FoodItem" positionX="-16" positionY="208" width="128" height="270"/>
+        <element name="LogEntry" positionX="208" positionY="208" width="128" height="270"/>
         <element name="MetaSeed" positionX="208" positionY="-16" width="128" height="90"/>
     </elements>
 </model>

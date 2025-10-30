@@ -1,0 +1,5 @@
+/* Custom Food Editor */
+"food_custom_add_title" = "Add custom food";
+"food_custom_validation_name" = "Name can't be empty";
+"food_custom_saved" = "Saved";
+"food_custom_duplicate" = "Looks like you've added this before";

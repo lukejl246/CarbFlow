@@ -39,8 +39,8 @@ final class LogEntry: NSManagedObject {
 
     override func willSave() {
         super.willSave()
-        if hasChanges {
-            updatedAt = Date()
+        if hasChanges && !changedValues().keys.contains("updatedAt") {
+            setPrimitiveValue(Date(), forKey: "updatedAt")
         }
     }
 

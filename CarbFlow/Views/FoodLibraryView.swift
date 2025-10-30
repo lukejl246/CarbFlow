@@ -81,9 +81,8 @@ struct FoodLibraryView: View {
         }
         .sheet(isPresented: $showScanner) {
             NavigationStack {
-                BarcodeScannerView(
-                    onCodeDetected: handleScannerResult,
-                    onError: handleScannerError
+                ScannerCameraView(
+                    onCodeDetected: handleScannerResult
                 )
                 .navigationTitle("Scan Barcode")
                 .toolbar {
@@ -185,7 +184,7 @@ struct FoodLibraryView: View {
                 .padding(.vertical, 14)
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(Color.white)
+                        .fill(Color(.systemBackground))
                         .shadow(color: Color.black.opacity(0.08), radius: 8, y: 4)
                 )
             }
@@ -294,20 +293,6 @@ struct FoodLibraryView: View {
         analyticsEvent("food_library_scan_detected", ["code": code])
     }
 
-    private func handleScannerError(_ error: Error) {
-        showScanner = false
-        if let scannerError = error as? ScannerCoordinator.ScannerError {
-            switch scannerError {
-            case .cameraUnavailable:
-                cameraAlert = .unavailable("Camera is not available on this device.")
-            case .inputUnsupported, .outputUnsupported:
-                cameraAlert = .generic("This device does not support barcode scanning.")
-            }
-        } else {
-            cameraAlert = .generic(error.localizedDescription)
-        }
-        analyticsEvent("food_library_scan_error", ["error": error.localizedDescription])
-    }
 
     private func analyticsEvent(_ name: String, _ params: [String: Any]) {
         #if DEBUG
@@ -326,6 +311,7 @@ private struct FoodRow: View {
                     .font(.headline)
                     .foregroundColor(.primary)
                 Spacer(minLength: 0)
+                #if DEBUG
                 if item.isVerified {
                     VerifiedBadge()
                         .padding(.top, 2)
@@ -333,6 +319,7 @@ private struct FoodRow: View {
                             VerifiedImpressionTracker.shared.track(item: item)
                         }
                 }
+                #endif
             }
 
             if let brand = item.brand, !brand.isEmpty {
@@ -348,7 +335,7 @@ private struct FoodRow: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
         .accessibilityElement(children: .combine)
@@ -387,9 +374,11 @@ private struct FoodRow: View {
         if let brand = item.brand, !brand.isEmpty {
             pieces.append("brand \(brand)")
         }
+        #if DEBUG
         if item.isVerified {
             pieces.append("verified")
         }
+        #endif
         pieces.append("net carbs \(Int(item.netCarbs)) grams")
         pieces.append("fat \(Int(item.fat)) grams")
         pieces.append("protein \(Int(item.protein)) grams")

@@ -13,6 +13,7 @@ struct DevFlagsView: View {
                 flagSection(title: "Quiz Modules", mappings: quizMappings)
                 flagSection(title: "Dashboard Tiles", mappings: dashboardMappings)
                 flagSection(title: "Challenges", mappings: challengeMappings)
+                qaToolsSection
                 resetButton
             }
             .padding(.vertical, 32)
@@ -92,7 +93,42 @@ struct DevFlagsView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
+                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+        )
+        .accessibilityElement(children: .contain)
+    }
+
+    private var qaToolsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("QA Tools")
+                .font(.headline)
+
+            NavigationLink(destination: DevQAFoodVerificationView()) {
+                HStack(spacing: 12) {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.title3)
+                        .foregroundColor(.accentColor)
+                        .frame(width: 32)
+
+                    Text("Food Verification QA")
+                        .font(.body)
+                        .foregroundColor(.primary)
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(minHeight: 44)
+            }
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
         .accessibilityElement(children: .contain)

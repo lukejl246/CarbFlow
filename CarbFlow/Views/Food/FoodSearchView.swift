@@ -2,25 +2,37 @@ import SwiftUI
 import CoreData
 
 struct FoodSearchView: View {
-    @State private var query: String = ""
+    @State private var query: String
     @State private var predictions: [FoodPrediction] = []
     @State private var infoMessage: String? = "Start typing to search foods."
     @State private var isLoading: Bool = false
     @State private var seedVersion: Int64 = 0
     @State private var searchTask: Task<Void, Never>?
+    @State private var isPresentingCustomEditor: Bool = false
+    @State private var customDraftName: String = ""
+    @State private var customFoodFeatureEnabled: Bool
     @FocusState private var isSearchFocused: Bool
 
     private let searcher: CFPredictiveSearch
     private let cache = FoodSearchCache.shared
     private let repository: FoodRepository
+    private let userRepository: UserFoodRepository
+    private let onFoodChosen: (Food) -> Void
 
     @MainActor
     init(
         searcher: CFPredictiveSearch,
-        repository: FoodRepository
+        repository: FoodRepository,
+        userRepository: UserFoodRepository,
+        initialQuery: String = "",
+        onFoodChosen: @escaping (Food) -> Void = { _ in }
     ) {
         self.searcher = searcher
         self.repository = repository
+        self.userRepository = userRepository
+        self.onFoodChosen = onFoodChosen
+        self._query = State(initialValue: initialQuery)
+        self._customFoodFeatureEnabled = State(initialValue: CFFlags.isEnabled(.cf_foodcustom))
     }
 
     var body: some View {
@@ -45,9 +57,19 @@ struct FoodSearchView: View {
 
             ScrollView {
                 LazyVStack(spacing: 16) {
-                    ForEach(predictions, id: \.id) { prediction in
-                        FoodPredictionRow(prediction: prediction)
+                    if shouldShowCustomCTA {
+                        addCustomFoodButton
                             .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+
+                    ForEach(predictions, id: \.id) { prediction in
+                        Button {
+                            Task { await selectPrediction(prediction) }
+                        } label: {
+                            FoodPredictionRow(prediction: prediction)
+                        }
+                        .buttonStyle(.plain)
+                        .transition(.move(edge: .top).combined(with: .opacity))
                     }
                 }
                 .padding(.horizontal, 20)
@@ -58,13 +80,55 @@ struct FoodSearchView: View {
         .animation(.easeInOut(duration: 0.25), value: predictions)
         .animation(.easeInOut(duration: 0.25), value: infoMessage)
         .task {
+            customFoodFeatureEnabled = CFFlags.isEnabled(.cf_foodcustom)
             seedVersion = await fetchSeedVersion()
+            let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty {
+                scheduleSearch(for: trimmed)
+            }
         }
         .onChange(of: query) { _, newValue in
             scheduleSearch(for: newValue)
         }
         .onDisappear {
             searchTask?.cancel()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .cfFoodCustomFlagDidChange)) { _ in
+            let enabled = CFFlags.isEnabled(.cf_foodcustom)
+            customFoodFeatureEnabled = enabled
+            if !enabled {
+                isPresentingCustomEditor = false
+            }
+        }
+        .sheet(
+            isPresented: Binding(
+                get: { customFoodFeatureEnabled && isPresentingCustomEditor },
+                set: { newValue in
+                    isPresentingCustomEditor = newValue
+                }
+            ),
+            onDismiss: {
+            customDraftName = ""
+        }) {
+            NavigationStack {
+                CustomFoodEditorView(
+                    mode: .create,
+                    repository: userRepository,
+                    initialName: customDraftName,
+                    onSaved: { food in
+                        onFoodChosen(food)
+                        isPresentingCustomEditor = false
+                        searchTask?.cancel()
+                        isLoading = false
+                        isSearchFocused = false
+                        query = ""
+                        predictions = []
+                        let displayName = (food.name ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                        let messageName = displayName.isEmpty ? "custom food" : displayName
+                        infoMessage = "Added \(messageName)."
+                    }
+                )
+            }
         }
     }
 
@@ -96,10 +160,54 @@ struct FoodSearchView: View {
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
         .padding(.horizontal, 20)
+    }
+
+    private var shouldShowCustomCTA: Bool {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        return customFoodFeatureEnabled && !trimmed.isEmpty && !isLoading && predictions.isEmpty
+    }
+
+    private var addCustomFoodButton: some View {
+        let suggestedName = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return Button {
+            customDraftName = suggestedName
+            isPresentingCustomEditor = true
+            searchTask?.cancel()
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "plus.circle.fill")
+                    .font(.system(size: 26, weight: .semibold))
+                    .foregroundStyle(Color.accentColor)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Add custom food")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+
+                    Text(suggestedName.isEmpty ? "Use your own nutrition details" : "Create “\(suggestedName)”")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+            }
+            .padding(.vertical, 18)
+            .padding(.horizontal, 20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(Color(.systemBackground))
+                    .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Add custom food")
     }
 
     private func scheduleSearch(for text: String) {
@@ -117,6 +225,19 @@ struct FoodSearchView: View {
             try? await Task.sleep(for: .milliseconds(150))
             guard !Task.isCancelled else { return }
             await performSearch(query: trimmed)
+        }
+    }
+
+    @MainActor
+    private func selectPrediction(_ prediction: FoodPrediction) async {
+        do {
+            if let food = try await repository.food(by: prediction.id) {
+                onFoodChosen(food)
+            }
+        } catch {
+            #if DEBUG
+            print("[FoodSearchView] Failed to load selected food: \(error)")
+            #endif
         }
     }
 
@@ -278,7 +399,7 @@ private struct FoodPredictionRow: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
     }
@@ -305,7 +426,8 @@ extension FoodSearchView {
     static func makeDefault() -> FoodSearchView {
         FoodSearchView(
             searcher: CFPredictiveSearch(persistence: CFPersistence.shared),
-            repository: FoodRepository(persistence: CFPersistence.shared)
+            repository: FoodRepository(persistence: CFPersistence.shared),
+            userRepository: UserFoodRepository(persistence: CFPersistence.shared)
         )
     }
 }

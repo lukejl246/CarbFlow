@@ -36,7 +36,7 @@ struct ScannerPolicyCard: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
                         RoundedRectangle(cornerRadius: 24, style: .continuous)
-                            .fill(Color.white)
+                            .fill(Color(.systemBackground))
                             .shadow(color: Color.black.opacity(0.08), radius: 16, y: 8)
                     )
                 }

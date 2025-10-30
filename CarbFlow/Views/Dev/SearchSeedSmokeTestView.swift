@@ -111,7 +111,7 @@ struct SearchSeedSmokeTestView: View {
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
         .padding(.horizontal, 20)
@@ -253,7 +253,7 @@ private struct FoodResultRow: View {
         .padding(18)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
     }
@@ -305,7 +305,7 @@ private struct FoodDetailSheet: View {
         .padding(22)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.white)
+                .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.08), radius: 14, x: 0, y: 8)
         )
     }
@@ -325,7 +325,7 @@ private struct FoodDetailSheet: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color.white)
+                    .fill(Color(.systemBackground))
                     .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 6)
             )
         }
