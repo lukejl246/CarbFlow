@@ -1,18 +1,39 @@
 import SwiftUI
 import Foundation
+import CoreData
 
 /// Offline behaviour: scanning, verification badges, and logging use only on-device Core Data and camera access with no network dependency.
 
 struct LogView: View {
-    @StateObject private var viewModel = LogViewModel()
+    @StateObject private var viewModel: LogViewModel
     @State private var showScanner = false
     @State private var showScannerPolicy = false
+    @State private var showSearchSheet = false
+    @State private var searchInitialQuery = ""
+    @State private var showCustomEditor = false
+    @State private var customInitialName = ""
+    @State private var customFoodFeatureEnabled = CFFlags.isEnabled(.cf_foodcustom)
     @State private var hasLoggedAppear = false
+
+    private let persistence: CFPersistence
+    private let userRepository: UserFoodRepository
+    private let foodRepository: FoodRepository
+    private let predictiveSearch: CFPredictiveSearch
+
+    init() {
+        let persistence = CFPersistence.shared
+        _viewModel = StateObject(wrappedValue: LogViewModel())
+        self.persistence = persistence
+        self.userRepository = UserFoodRepository(persistence: persistence)
+        self.foodRepository = FoodRepository(persistence: persistence)
+        self.predictiveSearch = CFPredictiveSearch(persistence: persistence)
+    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
                 scanCard
+                searchCard
                 if let code = viewModel.lastScannedCode {
                     lastScanSummary(code: code)
                 } else {
@@ -41,6 +62,37 @@ struct LogView: View {
                 showScannerPolicy = false
             }
         }
+        .sheet(isPresented: $showSearchSheet, onDismiss: {
+            searchInitialQuery = ""
+        }) {
+            NavigationStack {
+                FoodSearchView(
+                    searcher: predictiveSearch,
+                    repository: foodRepository,
+                    userRepository: userRepository,
+                    initialQuery: searchInitialQuery,
+                    onFoodChosen: { food in
+                        handleFoodSelection(food)
+                    }
+                )
+                .navigationTitle("Search Foods")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+        }
+        .sheet(isPresented: $showCustomEditor, onDismiss: {
+            customInitialName = ""
+        }) {
+            NavigationStack {
+                CustomFoodEditorView(
+                    mode: .create,
+                    repository: userRepository,
+                    initialName: customInitialName,
+                    onSaved: { food in
+                        handleFoodSelection(food)
+                    }
+                )
+            }
+        }
         .sheet(item: $viewModel.activePresentation) { presentation in
             switch presentation {
             case .add(let food):
@@ -57,11 +109,17 @@ struct LogView: View {
                 NotFoundSheet(
                     code: code,
                     message: message,
+                    customEnabled: customFoodFeatureEnabled,
                     onSearch: {
                         viewModel.trackSearchLibrary(for: code)
+                        searchInitialQuery = ""
+                        showSearchSheet = true
                     },
                     onCreate: {
                         viewModel.trackCreateCustom(for: code)
+                        guard customFoodFeatureEnabled else { return }
+                        customInitialName = ""
+                        showCustomEditor = true
                     },
                     onDismiss: {
                         viewModel.dismissPresentation()
@@ -83,6 +141,7 @@ struct LogView: View {
             }
         }
         .onAppear {
+            customFoodFeatureEnabled = CFFlags.isEnabled(.cf_foodcustom)
             if !hasLoggedAppear {
                 cf_logEvent("log-open", ["ts": Date().timeIntervalSince1970])
                 hasLoggedAppear = true
@@ -90,6 +149,13 @@ struct LogView: View {
         }
         .onDisappear {
             cf_logEvent("log-close", ["ts": Date().timeIntervalSince1970])
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .cfFoodCustomFlagDidChange)) { _ in
+            let enabled = CFFlags.isEnabled(.cf_foodcustom)
+            customFoodFeatureEnabled = enabled
+            if !enabled {
+                showCustomEditor = false
+            }
         }
     }
 
@@ -139,6 +205,53 @@ struct LogView: View {
         .accessibilityHint("Opens the camera to scan a food barcode.")
     }
 
+    private var searchCard: some View {
+        Button {
+            searchInitialQuery = ""
+            withAnimation(.easeInOut(duration: 0.25)) {
+                showSearchSheet = true
+            }
+            cf_logEvent("log-search-open", ["ts": Date().timeIntervalSince1970])
+        } label: {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 12) {
+                    Image(systemName: "magnifyingglass.circle.fill")
+                        .font(.system(size: 36, weight: .semibold))
+                        .foregroundStyle(Color.accentColor)
+                        .frame(width: 48, height: 48)
+                        .background(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(Color.accentColor.opacity(0.15))
+                        )
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Browse foods manually")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                        Text("Search the library or add your own custom food.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+
+                Text(customFoodFeatureEnabled ? "Includes your custom foods alongside the CarbFlow database." : "Search the CarbFlow food library without using the scanner.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(Color.white)
+            )
+            .shadow(color: Color.black.opacity(0.08), radius: 16, y: 8)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Browse foods manually")
+        .accessibilityHint("Opens search to find foods or add a custom entry.")
+    }
+
     private func lastScanSummary(code: String) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Last scan")
@@ -173,11 +286,30 @@ struct LogView: View {
                 .fill(Color(.secondarySystemBackground))
         )
     }
+
+    @MainActor
+    private func handleFoodSelection(_ food: Food) {
+        do {
+            let context = persistence.viewContext
+            let item = try food.ensureFoodItem(in: context)
+            if context.hasChanges {
+                try context.save()
+            }
+            viewModel.activePresentation = .add(food: item)
+            showSearchSheet = false
+            showCustomEditor = false
+        } catch {
+            #if DEBUG
+            print("[LogView] Failed to prepare food item for logging: \(error)")
+            #endif
+        }
+    }
 }
 
 private struct NotFoundSheet: View {
     let code: String
     let message: String
+    let customEnabled: Bool
     let onSearch: () -> Void
     let onCreate: () -> Void
     let onDismiss: () -> Void
@@ -218,16 +350,18 @@ private struct NotFoundSheet: View {
                     }
                     .buttonStyle(.borderedProminent)
 
-                    Button {
-                        onCreate()
-                        close()
-                    } label: {
-                        Text("Create a custom food")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
+                    if customEnabled {
+                        Button {
+                            onCreate()
+                            close()
+                        } label: {
+                            Text("Create a custom food")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                        }
+                        .buttonStyle(.bordered)
                     }
-                    .buttonStyle(.bordered)
                 }
                 .padding(.horizontal, 24)
 
